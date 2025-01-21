@@ -4,7 +4,7 @@ import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import { CAlert, CContainer, CFormSelect, CRow, CSpinner } from '@coreui/react-pro'
 
 const GET_DAFTAR_STRUKTUR_JABATAN = gql`
-  query DaftarStrukturJabatan($levelId: Int, $subLevelId: Int) {
+  query DaftarStrukturJabatan($levelId: ID, $subLevelId: ID) {
     daftarStrukturJabatan(levelId: $levelId, sublevelId: $subLevelId) {
       id
       level {
@@ -23,8 +23,8 @@ const GET_DAFTAR_STRUKTUR_JABATAN = gql`
 `
 
 const SelectStrukturJab = (props) => {
-  const [levelId, setLevelId] = useState(0)
-  const [sublevelId, setSublevelId] = useState(0)
+  const [levelId, setLevelId] = useState('')
+  const [sublevelId, setSublevelId] = useState('')
 
   const {
     data: levelData,
@@ -109,14 +109,14 @@ const SelectStrukturJab = (props) => {
   })
 
   const onChangeLevel = (e) => {
-    setLevelId(parseInt(e.target.value))
-    setSublevelId(0)
+    setLevelId(e.target.value)
+    setSublevelId('')
   }
 
   const onChangeSublevel = (e) => {
-    setSublevelId(parseInt(e.target.value))
+    setSublevelId(e.target.value)
     const jabpeg = sublevelData.daftarStrukturJabatan.find(
-      (element) => element.sublevel?.id === parseInt(e.target.value),
+      (element) => element.sublevel?.id === e.target.value,
     )
     props.setJabPegId(jabpeg?.id)
   }

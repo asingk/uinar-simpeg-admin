@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { CContainer, CFormSelect, CRow } from '@coreui/react-pro'
 
 const GET_STRUKTUR_ORG = gql`
-  query StrukturOrganisasi($unitKerjaId: String, $bagianId: Int, $subbagId: Int) {
+  query StrukturOrganisasi($unitKerjaId: String, $bagianId: ID, $subbagId: ID) {
     daftarStrukturOrganisasi(unitKerjaId: $unitKerjaId, bagianId: $bagianId, subbagId: $subbagId) {
       id
       unitKerja {
@@ -29,8 +29,8 @@ const GET_STRUKTUR_ORG = gql`
 
 const SelectUnitKerja = (props) => {
   const [unitKerjaId, setUnitKerjaId] = useState('')
-  const [bagianId, setBagianId] = useState(0)
-  const [subbagId, setSubbagId] = useState(0)
+  const [bagianId, setBagianId] = useState('')
+  const [subbagId, setSubbagId] = useState('')
   const [posisiId, setPosisiId] = useState('')
 
   const { data: ukerData, loading, error } = useQuery(GET_STRUKTUR_ORG)
@@ -174,18 +174,18 @@ const SelectUnitKerja = (props) => {
 
   const pilihUnitKerja = (e) => {
     setPosisiId('')
-    setBagianId(0)
+    setBagianId('')
     setUnitKerjaId(e.target.value)
   }
 
   const pilihBagianUnitKerja = (e) => {
-    setBagianId(parseInt(e.target.value))
+    setBagianId(e.target.value)
     setPosisiId('')
-    setSubbagId(0)
+    setSubbagId('')
   }
 
   const pilihSubBagUnitKerja = (e) => {
-    setSubbagId(parseInt(e.target.value))
+    setSubbagId(e.target.value)
     setPosisiId('')
   }
 

@@ -8,7 +8,7 @@ import EditStrukturJabatanModal from 'src/components/struktur-jabatan/EditStrukt
 import DeleteStrukturJabatanModal from 'src/components/struktur-jabatan/DeleteStrukturJabatanModal'
 
 const GET_JABATAN_PEGAWAI = gql`
-  query DaftarStrukturJabatan($levelId: Int, $subLevelId: Int) {
+  query DaftarStrukturJabatan($levelId: ID, $subLevelId: ID) {
     daftarStrukturJabatan(levelId: $levelId, sublevelId: $subLevelId) {
       id
       level {

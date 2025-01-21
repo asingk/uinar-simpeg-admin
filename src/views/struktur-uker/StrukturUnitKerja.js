@@ -8,7 +8,7 @@ import EditStrukturUkerModal from 'src/components/struktur-uker/EditStrukturUker
 import DeleteStrukturUkerModal from 'src/components/struktur-uker/DeleteStrukturUkerModal'
 
 const GET_STRUKTUR_ORG = gql`
-  query DaftarStrukturOrganisasi($unitKerjaId: String, $bagianId: Int, $subbagId: Int) {
+  query DaftarStrukturOrganisasi($unitKerjaId: String, $bagianId: ID, $subbagId: ID) {
     daftarStrukturOrganisasi(unitKerjaId: $unitKerjaId, bagianId: $bagianId, subbagId: $subbagId) {
       id
       unitKerja {
