@@ -1,6 +1,6 @@
 {
   "name": "@uinar/simpeg-admin",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Simpeg Admin UIN Ar-Raniry",
   "config": {
     "theme": "default",
@@ -40,7 +40,6 @@
     "@fullcalendar/timegrid": "^6.1.15",
     "@popperjs/core": "^2.11.8",
     "@react-google-maps/api": "^2.20.3",
-    "@react-pdf/renderer": "^4.1.6",
     "axios": "^1.7.9",
     "chart.js": "^4.4.6",
     "classnames": "^2.5.1",
