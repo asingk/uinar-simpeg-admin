@@ -34,10 +34,10 @@ const SelectStrukturJab = (props) => {
   const [get, { data: sublevelData, loading: sublevelLoading, error: sublevelError }] =
     useLazyQuery(GET_DAFTAR_STRUKTUR_JABATAN)
 
-  let sublevelOptions = [{ label: '-- Pilih Sublevel --', value: '0' }]
+  let sublevelOptions = [{ label: '-- Pilih Sublevel --', value: '' }]
 
   useEffect(() => {
-    if (levelId > 0 && sublevelId === 0) {
+    if (levelId && !sublevelId) {
       get({ variables: { levelId: levelId } })
       if (sublevelData?.daftarStrukturJabatan.length === 1 && sublevelOptions.length === 1) {
         props.setJabPegId(sublevelData.daftarStrukturJabatan[0].id)
@@ -135,7 +135,7 @@ const SelectStrukturJab = (props) => {
             <CSpinner />
           </div>
         )}
-        {levelId > 0 && sublevelOptions.length > 1 && (
+        {levelId && sublevelOptions.length > 1 && (
           <CFormSelect
             aria-label="Default select sublevel"
             options={sublevelOptions}
