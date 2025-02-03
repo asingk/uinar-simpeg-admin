@@ -93,7 +93,7 @@ const SelectUnitKerja = (props) => {
       return 0
     })
 
-  let bagianOptions = [{ label: '-- Pilih Bagian Unit Kerja --', value: '0' }]
+  let bagianOptions = [{ label: '-- Pilih Bagian Unit Kerja --', value: '' }]
   bagStrOrgData?.daftarStrukturOrganisasi.forEach((row) => {
     if (row.bagian) {
       const opt = {
@@ -101,7 +101,7 @@ const SelectUnitKerja = (props) => {
         value: row.bagian.id,
       }
       bagianOptions.push(opt)
-    } else if (!row.bagian && bagianId < 1) {
+    } else if (!row.bagian && !bagianId) {
       const opt = {
         label: row.posisi.nama,
         value: row.posisi.id,
@@ -126,7 +126,7 @@ const SelectUnitKerja = (props) => {
       return 0
     })
 
-  let subbagianOptions = [{ label: '-- Pilih Subbagian Unit Kerja --', value: '0' }]
+  let subbagianOptions = [{ label: '-- Pilih Subbagian Unit Kerja --', value: '' }]
   subbagStrOrgData?.daftarStrukturOrganisasi.forEach((row) => {
     if (row.subbag) {
       const opt = {
@@ -134,7 +134,7 @@ const SelectUnitKerja = (props) => {
         value: row.subbag.id,
       }
       subbagianOptions.push(opt)
-    } else if (!row.subbag && subbagId < 1) {
+    } else if (!row.subbag && !subbagId) {
       const posOpt = {
         label: row.posisi.nama,
         value: row.posisi.id,
@@ -195,8 +195,8 @@ const SelectUnitKerja = (props) => {
       (element) =>
         element.posisi.id === e.target.value &&
         (unitKerjaId ? element.unitKerja?.id === unitKerjaId : element.unitKerja === null) &&
-        (bagianId > 0 ? element.bagian?.id === bagianId : element.bagian === null) &&
-        (subbagId > 0 ? element.subbag?.id === subbagId : element.subbag === null),
+        (bagianId ? element.bagian?.id === bagianId : element.bagian === null) &&
+        (subbagId ? element.subbag?.id === subbagId : element.subbag === null),
     )
     props.setStrOrgId(strOrg.id)
   }
@@ -218,7 +218,7 @@ const SelectUnitKerja = (props) => {
             onChange={pilihBagianUnitKerja}
           />
         )}
-        {bagianId > 0 && subbagianOptionUnique.length > 1 && (
+        {bagianId && subbagianOptionUnique.length > 1 && (
           <CFormSelect
             aria-label="Default select subbagian unit kerja"
             options={subbagianOptionUnique}
