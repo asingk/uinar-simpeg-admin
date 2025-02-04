@@ -62,7 +62,7 @@ const SelectJabatan = (props) => {
     jabsOptions.push(opt)
   })
 
-  let levelsOptions = [{ label: '-- Pilih Level --', value: '0' }]
+  let levelsOptions = [{ label: '-- Pilih Level --', value: '' }]
 
   jabData?.jabatan.level.forEach((row) => {
     const opt = {
@@ -72,15 +72,13 @@ const SelectJabatan = (props) => {
     levelsOptions.push(opt)
   })
 
-  console.log(levelsOptions)
-
   const changeJabatanHandler = (e) => {
     setJabId(e.target.value)
-    props.setLevelId(0)
+    props.setLevelId('')
   }
 
   const changeLevelJabatanHandler = (e) => {
-    props.setLevelId(parseInt(e.target.value))
+    props.setLevelId(e.target.value)
   }
 
   return (
@@ -104,7 +102,7 @@ const SelectJabatan = (props) => {
 }
 
 SelectJabatan.propTypes = {
-  levelId: PropTypes.number.isRequired,
+  levelId: PropTypes.string.isRequired,
   setLevelId: PropTypes.func,
 }
 

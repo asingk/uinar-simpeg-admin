@@ -40,8 +40,8 @@ const GET_DAFTAR_SUBLEVEL = gql`
 const AddStrukturJabatanModal = (props) => {
   console.log('rendering... AddStrukturJabatanModal')
 
-  const [levelId, setLevelId] = useState(0)
-  const [sublevelId, setSublevelId] = useState(0)
+  const [levelId, setLevelId] = useState('')
+  const [sublevelId, setSublevelId] = useState('')
   const [grade, setGrade] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -53,7 +53,7 @@ const AddStrukturJabatanModal = (props) => {
     levelId: levelId,
   }
 
-  if (sublevelId > 0) {
+  if (sublevelId) {
     inputVariables.sublevelId = sublevelId
   }
 
@@ -86,28 +86,12 @@ const AddStrukturJabatanModal = (props) => {
   }, [data, props])
 
   useEffect(() => {
-    if (levelId > 0) {
+    if (levelId) {
       getSublevel()
     }
   }, [getSublevel, levelId])
 
-  let sublevelOption = [{ label: '-- Pilih Sublevel Jabatan --', value: '0' }]
-
-  // if (subData) {
-  //   const sublevelDefault = {
-  //     id: 0,
-  //     nama: '-- Pilih Sublevel Jabatan --',
-  //   }
-  //   const sublevelJab = [...subData.daftarSublevelJabatan]
-  //   if (sublevelJab && sublevelJab.length > 0) {
-  //     sublevelJab.unshift(sublevelDefault)
-  //   }
-  //   sublevelOption = sublevelJab.map((item, index) => (
-  //     <option key={index} value={item.id}>
-  //       {item.nama}
-  //     </option>
-  //   ))
-  // }
+  let sublevelOption = [{ label: '-- Pilih Sublevel Jabatan --', value: '' }]
 
   subData?.daftarSublevelJabatan.forEach((row) => {
     const opt = {
@@ -118,7 +102,7 @@ const AddStrukturJabatanModal = (props) => {
   })
 
   const onChangeSublevel = (e) => {
-    setSublevelId(parseInt(e.target.value))
+    setSublevelId(e.target.value)
   }
 
   const onChangeGrade = (e) => {
@@ -147,7 +131,7 @@ const AddStrukturJabatanModal = (props) => {
                 onChange={onChangeSublevel}
               />
             )}
-            {sublevelId > 0 && <SelectGrade grade={grade} setGrade={onChangeGrade} />}
+            {sublevelId && <SelectGrade grade={grade} setGrade={onChangeGrade} />}
             {error && (
               <CAlert className="mt-3" color="danger">
                 Error: {error.message}
