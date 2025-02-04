@@ -13,8 +13,6 @@ const GET_DAFTAR_BAG_UKER = gql`
 `
 
 const SelectBagianUnitKerja = (props) => {
-  console.log('rendering... SelectBagianUnitKerja')
-
   const { data, loading, error } = useQuery(GET_DAFTAR_BAG_UKER)
 
   if (loading) {
@@ -24,7 +22,7 @@ const SelectBagianUnitKerja = (props) => {
     return <p className="text-center">Error.. :-(</p>
   }
 
-  let options = [{ label: '-- Pilih Bagian Unit Kerja --', value: '0' }]
+  let options = [{ label: '-- Pilih Bagian Unit Kerja --', value: '' }]
   data.daftarBagianUnitKerja.forEach((row) => {
     const opt = {
       label: row.nama,
@@ -38,13 +36,13 @@ const SelectBagianUnitKerja = (props) => {
       aria-label="Default select bagian unit kerja"
       options={options}
       value={props.bagianId}
-      onChange={(e) => props.setBagianId(parseInt(e.target.value))}
+      onChange={(e) => props.setBagianId(e.target.value)}
     />
   )
 }
 
 SelectBagianUnitKerja.propTypes = {
-  bagianId: PropTypes.number.isRequired,
+  bagianId: PropTypes.string.isRequired,
   setBagianId: PropTypes.func,
 }
 

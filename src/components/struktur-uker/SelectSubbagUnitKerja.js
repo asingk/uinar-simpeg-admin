@@ -13,8 +13,6 @@ const GET_DAFTAR_SUBBAG_UKER = gql`
 `
 
 const SelectSubbagUnitKerja = (props) => {
-  console.log('rendering... SelectSubbagUnitKerja')
-
   const { data, loading, error } = useQuery(GET_DAFTAR_SUBBAG_UKER)
 
   if (loading) {
@@ -24,7 +22,7 @@ const SelectSubbagUnitKerja = (props) => {
     return <p className="text-center">Error.. :-(</p>
   }
 
-  let options = [{ label: '-- Pilih Subbagian Unit Kerja --', value: '0' }]
+  let options = [{ label: '-- Pilih Subbagian Unit Kerja --', value: '' }]
   data.daftarSubbagUnitKerja.forEach((row) => {
     const opt = {
       label: row.nama,
@@ -38,13 +36,13 @@ const SelectSubbagUnitKerja = (props) => {
       aria-label="Default select subbagian unit kerja"
       options={options}
       value={props.subbagId}
-      onChange={(e) => props.setSubbagId(parseInt(e.target.value))}
+      onChange={(e) => props.setSubbagId(e.target.value)}
     />
   )
 }
 
 SelectSubbagUnitKerja.propTypes = {
-  subbagId: PropTypes.number.isRequired,
+  subbagId: PropTypes.string.isRequired,
   setSubbagId: PropTypes.func,
 }
 

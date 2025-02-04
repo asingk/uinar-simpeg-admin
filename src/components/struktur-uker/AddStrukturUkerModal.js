@@ -30,11 +30,9 @@ const CREATE_STRUKTUR_UKER = gql`
 `
 
 const AddStrukturJabatanModal = (props) => {
-  console.debug('rendering... AddStrukturJabatanModal')
-
   const [unitKerjaId, setUnitKerjaId] = useState('')
-  const [bagianId, setBagianId] = useState(0)
-  const [subbagId, setSubbagId] = useState(0)
+  const [bagianId, setBagianId] = useState('')
+  const [subbagId, setSubbagId] = useState('')
   const [posisiId, setPosisiId] = useState('')
   const [grade, setGrade] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -49,11 +47,11 @@ const AddStrukturJabatanModal = (props) => {
     inputVariables.unitKerjaId = unitKerjaId
   }
 
-  if (bagianId > 0) {
+  if (bagianId) {
     inputVariables.bagianId = bagianId
   }
 
-  if (subbagId > 0) {
+  if (subbagId) {
     inputVariables.subbagId = subbagId
   }
 
@@ -87,14 +85,14 @@ const AddStrukturJabatanModal = (props) => {
 
   const onChangeUnitKerja = (e) => {
     setUnitKerjaId(e)
-    setBagianId(0)
-    setSubbagId(0)
+    setBagianId('')
+    setSubbagId('')
     inputVariables.unitKerjaId = e
   }
 
   const onChangeBagian = (e) => {
     setBagianId(e)
-    setSubbagId(0)
+    setSubbagId('')
   }
 
   const onChangeSubbag = (e) => {
@@ -121,9 +119,7 @@ const AddStrukturJabatanModal = (props) => {
             {unitKerjaId && (
               <SelectBagianUnitKerja bagianId={bagianId} setBagianId={onChangeBagian} />
             )}
-            {bagianId > 0 && (
-              <SelectSubbagUnitKerja subbagId={subbagId} setSubbagId={onChangeSubbag} />
-            )}
+            {bagianId && <SelectSubbagUnitKerja subbagId={subbagId} setSubbagId={onChangeSubbag} />}
             <SelectPosisi posisiId={posisiId} setPosisi={onChangePosisi} />
             <SelectGrade grade={grade} setGrade={onChangeGrade} />
           </CRow>
