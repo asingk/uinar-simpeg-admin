@@ -56,7 +56,7 @@ const SelectFakultas = (props) => {
   }
 
   const onChangeProdi = (e) => {
-    props.changeProdiId(parseInt(e.target.value))
+    props.changeProdiId(e.target.value)
   }
 
   const faksDefault = {
@@ -124,7 +124,7 @@ SelectFakultas.propTypes = {
   fakultasId: PropTypes.string,
   changeFakultas: PropTypes.func,
   changeProdiId: PropTypes.func,
-  prodiId: PropTypes.number,
+  prodiId: PropTypes.string,
 }
 
 export default SelectFakultas
