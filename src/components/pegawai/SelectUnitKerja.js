@@ -28,23 +28,23 @@ const GET_STRUKTUR_ORG = gql`
 `
 
 const SelectUnitKerja = (props) => {
-  const [unitKerjaId, setUnitKerjaId] = useState('')
-  const [bagianId, setBagianId] = useState('')
-  const [subbagId, setSubbagId] = useState('')
-  const [posisiId, setPosisiId] = useState('')
+  const [unitKerjaId, setUnitKerjaId] = useState()
+  const [bagianId, setBagianId] = useState()
+  const [subbagId, setSubbagId] = useState()
+  const [posisiId, setPosisiId] = useState()
 
   const { data: ukerData, loading, error } = useQuery(GET_STRUKTUR_ORG)
 
+  const [ukerStrOrg, { data: ukerStrOrgData }] = useLazyQuery(GET_STRUKTUR_ORG)
   const [bagStrOrg, { data: bagStrOrgData }] = useLazyQuery(GET_STRUKTUR_ORG)
-  const [subbagStrOrg, { data: subbagStrOrgData }] = useLazyQuery(GET_STRUKTUR_ORG)
 
   useEffect(() => {
-    bagStrOrg({ variables: { unitKerjaId: unitKerjaId } })
-  }, [bagStrOrg, unitKerjaId])
+    ukerStrOrg({ variables: { unitKerjaId: unitKerjaId } })
+  }, [ukerStrOrg, unitKerjaId])
 
   useEffect(() => {
-    subbagStrOrg({ variables: { unitKerjaId: unitKerjaId, bagianId: bagianId } })
-  }, [bagianId, subbagStrOrg, unitKerjaId])
+    bagStrOrg({ variables: { unitKerjaId: unitKerjaId, bagianId: bagianId } })
+  }, [bagianId, bagStrOrg, unitKerjaId])
 
   if (loading) {
     return (
@@ -94,7 +94,7 @@ const SelectUnitKerja = (props) => {
     })
 
   let bagianOptions = [{ label: '-- Pilih Bagian Unit Kerja --', value: '' }]
-  bagStrOrgData?.daftarStrukturOrganisasi.forEach((row) => {
+  ukerStrOrgData?.daftarStrukturOrganisasi.forEach((row) => {
     if (row.bagian) {
       const opt = {
         label: row.bagian.nama,
@@ -127,7 +127,7 @@ const SelectUnitKerja = (props) => {
     })
 
   let subbagianOptions = [{ label: '-- Pilih Subbagian Unit Kerja --', value: '' }]
-  subbagStrOrgData?.daftarStrukturOrganisasi.forEach((row) => {
+  bagStrOrgData?.daftarStrukturOrganisasi.forEach((row) => {
     if (row.subbag) {
       const opt = {
         label: row.subbag.nama,
@@ -159,8 +159,8 @@ const SelectUnitKerja = (props) => {
       return 0
     })
 
-  if (subbagId > 0) {
-    const subbagChoice = subbagStrOrgData?.daftarStrukturOrganisasi.filter(
+  if (subbagId) {
+    const subbagChoice = bagStrOrgData?.daftarStrukturOrganisasi.filter(
       (el) => el.subbag?.id === subbagId,
     )
     subbagChoice?.forEach((row) => {
@@ -173,20 +173,20 @@ const SelectUnitKerja = (props) => {
   }
 
   const pilihUnitKerja = (e) => {
-    setPosisiId('')
-    setBagianId('')
+    setPosisiId(null)
+    setBagianId(null)
     setUnitKerjaId(e.target.value)
   }
 
   const pilihBagianUnitKerja = (e) => {
     setBagianId(e.target.value)
-    setPosisiId('')
-    setSubbagId('')
+    setPosisiId(null)
+    setSubbagId(null)
   }
 
   const pilihSubBagUnitKerja = (e) => {
     setSubbagId(e.target.value)
-    setPosisiId('')
+    setPosisiId(null)
   }
 
   const changePosisi = (e) => {

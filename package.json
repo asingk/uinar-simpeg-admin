@@ -1,6 +1,6 @@
 {
   "name": "@uinar/simpeg-admin",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "Simpeg Admin UIN Ar-Raniry",
   "config": {
     "theme": "default",
