@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { cilFile, cilThumbDown, cilThumbUp } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
@@ -18,6 +18,7 @@ import dayjs from 'dayjs'
 import ApproveIzinModal from '../../components/kehadiran/ApproveIzinModal'
 import RejectIzinModal from '../../components/kehadiran/RejectIzinModal'
 import { useNavigate } from 'react-router-dom'
+import { KeycloakContext } from 'src/context'
 
 const Izin = () => {
   console.debug('rendering... Izin')
@@ -37,6 +38,8 @@ const Izin = () => {
   const navigate = useNavigate()
   const [searchNip, setSearchNip] = useState('')
 
+  const keycloak = useContext(KeycloakContext)
+
   useEffect(() => {
     let param = {
       size: size,
@@ -47,8 +50,11 @@ const Izin = () => {
       param.idPegawai = searchNip
     }
     axios
-      .get(import.meta.env.VITE_KEHADIRAN_API_URL + '/usul-izin', {
+      .get(`${import.meta.env.VITE_SIMPEG_REST_URL}/usul-izin`, {
         params: param,
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+        },
       })
       .then((response) => {
         setCurrentPage(response.data.page.number + 1)

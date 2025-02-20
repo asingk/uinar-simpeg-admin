@@ -119,7 +119,7 @@ const UbahRiwayatProfilModal = (props) => {
     try {
       setLoading(true)
       await axios.put(
-        import.meta.env.VITE_KEHADIRAN_API_URL + '/riwayat-profil/' + props.data.id,
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/riwayat-profil/${props.data.id}`,
         {
           golongan: golongan,
           jenisJabatan: jenisJabatan,
@@ -134,7 +134,7 @@ const UbahRiwayatProfilModal = (props) => {
         },
         {
           headers: {
-            apikey: import.meta.env.VITE_API_KEY,
+            Authorization: `Bearer ${keycloak.token}`,
           },
         },
       )

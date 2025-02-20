@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import {
@@ -11,39 +11,49 @@ import {
   CModalTitle,
   CSpinner,
 } from '@coreui/react-pro'
+import axios from 'axios'
+import { KeycloakContext } from 'src/context'
 
 const UndoHapusKehadiranModal = (props) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
 
+  const keycloak = useContext(KeycloakContext)
+  const loginId = keycloak.idTokenParsed?.preferred_username
+
   const undoHapusAction = async () => {
     setError(false)
     setLoading(true)
-    const resp = await fetch(
-      import.meta.env.VITE_KEHADIRAN_API_URL +
-        '/kehadiran/undelete?idPegawai=' +
-        props.idPegawai +
-        '&tanggal=' +
-        props.tanggal,
-      {
-        method: 'POST',
-        headers: {
-          apikey: import.meta.env.VITE_API_KEY,
+    await axios
+      .post(
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/kehadiran/undelete`,
+        {
+          idPegawai: props.idPegawai,
+          tanggal: props.tanggal,
+          updatedBy: loginId,
         },
-      },
-    )
-    if (resp.ok) {
-      setLoading(false)
-      props.undoDelete()
-    } else {
-      setLoading(false)
-      setError(true)
-    }
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        },
+      )
+      .then(function () {
+        setLoading(false)
+        props.undoDelete()
+      })
+      .catch(function () {
+        setLoading(false)
+        setError(true)
+      })
+      .finally(function () {
+        setLoading(false)
+      })
   }
 
   let modalBody = (
     <p>
-      Anda yakin ingin mengembalikan kehadiran pada {dayjs(props.tanggal).format('DD/MM/YYYY')} yang
+      Anda yakin ingin mengembalikan kehadiran pada {dayjs(props.tanggal).format('D/M/YYYY')} yang
       sudah dihapus?
     </p>
   )

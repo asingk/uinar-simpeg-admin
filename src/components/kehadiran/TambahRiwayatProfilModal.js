@@ -29,13 +29,13 @@ const TambahRiwayatProfilModal = (props) => {
   const [jenisJabatan, setJenisJabatan] = useState('')
   const [unitGaji, setUnitGaji] = useState('')
   const [unitRemun, setUnitRemun] = useState('')
-  const [remunGrade, setRemunGrade] = useState(0)
+  const [remunGrade, setRemunGrade] = useState()
   const [grade, setGrade] = useState('')
-  const [implementasiRemun, setImplementasiRemun] = useState(0)
-  const [pajak, setPajak] = useState(0)
-  const [uangMakanHarian, setUangMakanHarian] = useState(0)
-  const [idStatusPegawai, setIdStatusPegawai] = useState(0)
-  const [bulan, setBulan] = useState(0)
+  const [implementasiRemun, setImplementasiRemun] = useState()
+  const [pajak, setPajak] = useState()
+  const [uangMakanHarian, setUangMakanHarian] = useState()
+  const [idStatusPegawai, setIdStatusPegawai] = useState()
+  const [bulan, setBulan] = useState()
   const [namaPegawai, setNamaPegawai] = useState('')
 
   const keycloak = useContext(KeycloakContext)
@@ -170,7 +170,7 @@ const TambahRiwayatProfilModal = (props) => {
     try {
       setLoading(true)
       await axios.post(
-        import.meta.env.VITE_KEHADIRAN_API_URL + '/pegawai/' + props.nip + '/riwayat-profil',
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/pegawai/${props.nip}/riwayat-profil`,
         {
           tahun: props.tahun,
           bulan: bulan,
@@ -189,7 +189,7 @@ const TambahRiwayatProfilModal = (props) => {
         },
         {
           headers: {
-            apikey: import.meta.env.VITE_API_KEY,
+            Authorization: `Bearer ${keycloak.token}`,
           },
         },
       )

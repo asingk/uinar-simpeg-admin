@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import {
@@ -11,45 +11,56 @@ import {
   CModalTitle,
   CSpinner,
 } from '@coreui/react-pro'
+import axios from 'axios'
+import { KeycloakContext } from 'src/context'
 
 const UndoTambahKehadiranModal = (props) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
 
+  const keycloak = useContext(KeycloakContext)
+
+  const cekResp = async () => {
+    try {
+      const resp = await axios.get(
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/pegawai/${props.idPegawai}/kehadiran/search?status=${props.status}&tanggal=${props.tanggal}`,
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        },
+      )
+      return resp.data
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const deleteKehadiran = async (id) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_SIMPEG_REST_URL}/kehadiran/${id}`, {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+        },
+      })
+      props.undoAdd()
+    } catch (error) {
+      setError(true)
+    }
+  }
+
   const undoTambahAction = async () => {
     setError(false)
     setLoading(true)
-    const cekResp = await fetch(
-      import.meta.env.VITE_KEHADIRAN_API_URL +
-        '/kehadiran/search?idPegawai=' +
-        props.idPegawai +
-        '&status=' +
-        props.status +
-        '&tanggal=' +
-        props.tanggal,
-    )
-    if (cekResp.ok) {
-      const json = await cekResp.json()
-      const resp = await fetch(import.meta.env.VITE_KEHADIRAN_API_URL + '/kehadiran/' + json.id, {
-        method: 'DELETE',
-        headers: {
-          apikey: import.meta.env.VITE_API_KEY,
-        },
-      })
-      if (resp.ok) {
-        setLoading(false)
-        props.undoAdd()
-      } else {
-        setLoading(false)
-        setError(true)
-      }
-    }
+    const data = await cekResp()
+    await deleteKehadiran(data.id)
+    setLoading(false)
   }
 
   let modalBody = (
     <p>
       Anda yakin ingin membatalkan kehadiran {props.status} pada{' '}
-      {dayjs(props.tanggal).format('DD/MM/YYYY')} yang sudah ditambahkan?
+      {dayjs(props.tanggal).format('D/M/YYYY')} yang sudah ditambahkan?
     </p>
   )
 

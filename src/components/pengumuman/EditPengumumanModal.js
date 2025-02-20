@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import {
@@ -16,6 +16,7 @@ import {
   CSpinner,
 } from '@coreui/react-pro'
 import ReactQuill from 'react-quill'
+import { KeycloakContext } from 'src/context'
 
 const modules = {
   toolbar: [
@@ -42,7 +43,10 @@ const EditPengumumanModal = (props) => {
   const [statusPegawai, setStatusPegawai] = useState(props.statusPegawai)
   const [jenisJabatan, setJenisJabatan] = useState(props.jenisJabatan)
 
-  // let stat = [...props.stat]
+  const keycloak = useContext(KeycloakContext)
+
+  console.log(statusPegawai)
+  console.log(jenisJabatan)
 
   const handleStatusPegawai = (e) => {
     // Destructuring
@@ -50,31 +54,25 @@ const EditPengumumanModal = (props) => {
 
     // Case 1 : The user checks the box
     if (checked) {
-      // stat.push(Number(value))
       setStatusPegawai([...statusPegawai, Number(value)])
     }
 
     // Case 2  : The user unchecks the box
     else {
-      // stat = stat.filter((e) => e !== Number(value))
       setStatusPegawai(statusPegawai.filter((e) => e !== Number(value)))
     }
   }
-
-  // let jenisJab = [...props.jenisJab]
 
   const handleJenisJabatan = (e) => {
     const { value, checked } = e.target
 
     // Case 1 : The user checks the box
     if (checked) {
-      // jenisJab.push(value)
       setJenisJabatan([...jenisJabatan, value])
     }
 
     // Case 2  : The user unchecks the box
     else {
-      // jenisJab = jenisJab.filter((e) => e !== value)
       setJenisJabatan(jenisJabatan.filter((e) => e !== value))
     }
   }
@@ -201,7 +199,7 @@ const EditPengumumanModal = (props) => {
     try {
       setLoading(true)
       await axios.put(
-        import.meta.env.VITE_SSO_API_URL + '/apps/simpeg/welcome/' + props.id,
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/pengumuman/${props.id}`,
         {
           isActive: isActive,
           nama: nama,
@@ -211,7 +209,7 @@ const EditPengumumanModal = (props) => {
         },
         {
           headers: {
-            apikey: import.meta.env.VITE_API_KEY,
+            Authorization: `Bearer ${keycloak.token}`,
           },
         },
       )

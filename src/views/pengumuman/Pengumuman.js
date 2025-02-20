@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { CAlert, CButton, CSpinner, CTable } from '@coreui/react-pro'
 import CIcon from '@coreui/icons-react'
 import { cilPencil, cilPlus, cilTrash } from '@coreui/icons'
@@ -6,6 +6,7 @@ import axios from 'axios'
 import DeletePengumumanModal from 'src/components/pengumuman/DeletePengumumanModal'
 import AddPengumumanModal from 'src/components/pengumuman/AddPengumumanModal'
 import EditPengumumanModal from 'src/components/pengumuman/EditPengumumanModal'
+import { KeycloakContext } from 'src/context'
 
 const Pengumuman = () => {
   console.debug('rendering... Pengumuman')
@@ -24,11 +25,17 @@ const Pengumuman = () => {
   const [nama, setNama] = useState('')
   const [statusPegawai, setStatusPegawai] = useState([])
 
+  const keycloak = useContext(KeycloakContext)
+
   useEffect(() => {
     axios
-      .get(import.meta.env.VITE_SSO_API_URL + '/apps/simpeg/welcome')
+      .get(`${import.meta.env.VITE_SIMPEG_REST_URL}/pengumuman`, {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+        },
+      })
       .then((response) => {
-        setData(response.data)
+        setData(response.data?.pengumuman)
       })
       .catch((error) => {
         setError(error)

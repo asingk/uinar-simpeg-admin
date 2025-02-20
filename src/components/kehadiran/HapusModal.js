@@ -12,6 +12,7 @@ import {
   CSpinner,
 } from '@coreui/react-pro'
 import { KeycloakContext } from 'src/context'
+import axios from 'axios'
 
 const HapusKehadiranModal = (props) => {
   const [loading, setLoading] = useState(false)
@@ -23,32 +24,33 @@ const HapusKehadiranModal = (props) => {
   const hapusAction = async () => {
     setError(false)
     setLoading(true)
-    const resp = await fetch(
-      import.meta.env.VITE_KEHADIRAN_API_URL +
-        '/kehadiran?idPegawai=' +
-        props.idPegawai +
-        '&tanggal=' +
-        props.tanggal +
-        '&deletedBy=' +
-        loginId,
-      {
-        method: 'DELETE',
-        headers: {
-          apikey: import.meta.env.VITE_API_KEY,
+    await axios
+      .post(
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/kehadiran/safe-delete`,
+        {
+          idPegawai: props.idPegawai,
+          tanggal: props.tanggal,
+          updatedBy: loginId,
         },
-      },
-    )
-    if (resp.ok) {
-      setLoading(false)
-      props.deleted()
-    } else {
-      setLoading(false)
-      setError(true)
-    }
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        },
+      )
+      .then(function () {
+        props.deleted()
+      })
+      .catch(function () {
+        setError(true)
+      })
+      .finally(function () {
+        setLoading(false)
+      })
   }
 
   let modalBody = (
-    <p>Anda yakin ingin menghapus kehadiran pada {dayjs(props.tanggal).format('DD/MM/YYYY')}?</p>
+    <p>Anda yakin ingin menghapus kehadiran pada {dayjs(props.tanggal).format('D/M/YYYY')}?</p>
   )
 
   if (loading) {

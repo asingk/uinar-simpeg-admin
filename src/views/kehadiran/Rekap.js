@@ -1,6 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import { CButton, CCol, CFormSelect, CProgress, CProgressBar, CRow } from '@coreui/react-pro'
+import {
+  CButton,
+  CCol,
+  CFormSelect,
+  CListGroup,
+  CListGroupItem,
+  CProgress,
+  CProgressBar,
+  CRow,
+} from '@coreui/react-pro'
 import SelectBulanTahunRekapRemun from '../../components/kehadiran/SelectBulanTahunRekapRemun'
 import SelectUnitGajiRekapRemun from '../../components/kehadiran/SelectUnitGajiRekapRemun'
 import axios from 'axios'
@@ -20,17 +29,17 @@ const Rekap = () => {
   const keycloak = useContext(KeycloakContext)
   const loginId = keycloak.idTokenParsed?.preferred_username
 
-  useEffect(() => {
+  const getRekapStatus = () => {
     let url
     let param = {
       tahun: tahun,
       bulan: bulan,
     }
     if (jenisRekap === 'um') {
-      url = import.meta.env.VITE_KEHADIRAN_API_URL + '/rekap/uang-makan'
+      url = `${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/uang-makan`
       param.unitGajiId = idGaji
     } else if (jenisRekap === 'remun') {
-      url = import.meta.env.VITE_KEHADIRAN_API_URL + '/rekap/remun'
+      url = `${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/remun`
       param.unitRemunId = idGaji
     }
     if (!idGaji) {
@@ -40,84 +49,73 @@ const Rekap = () => {
     axios
       .get(url, {
         params: param,
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+        },
       })
       .then(function (response) {
         // handle success
-        // console.log(response.data)
+        // console.log(response.data.progress)
         setRekap(response.data)
       })
-      .catch(function (error) {
+      .catch(function () {
         // handle error
         // console.log(error)
         setRekap(null)
       })
+  }
+
+  useEffect(() => {
+    getRekapStatus()
   }, [bulan, idGaji, jenisRekap, tahun])
+
+  useEffect(() => {
+    let intervalId
+    if (rekap?.progress < 100) {
+      intervalId = setInterval(() => {
+        getRekapStatus()
+      }, 1000)
+    }
+    // Clear the interval on unmount
+    return () => clearInterval(intervalId)
+  }, [rekap?.progress])
 
   const onChangeBulan = (tahunBulan) => {
     setBulan(parseInt(tahunBulan.substr(4)))
     setTahun(parseInt(tahunBulan.substr(0, 4)))
   }
 
-  const evt = (streamUrl) => {
-    const evtSource = new EventSource(streamUrl)
-    evtSource.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      console.log(data?.progress)
-      // if (data.progress) {
-      //   setProgress(data.progress)
-      // } else {
-      //   setProgress(0)
-      // }
-      setRekap(data)
-      if (data.progress === 100) {
-        evtSource.close()
-        // setRekap(data)
-      }
-    }
-  }
-
   const onGenerate = () => {
-    // setGenerating(true)
     let param = {
       tahun: tahun,
       bulan: bulan,
-      admin: loginId,
+      createdBy: loginId,
+      jenisRekap,
     }
-    let url
-    let streamUrl =
-      import.meta.env.VITE_KEHADIRAN_API_URL +
-      '/rekap/stream-generate?tahun=' +
-      tahun +
-      '&bulan=' +
-      bulan +
-      '&jenisRekap=' +
-      jenisRekap
     if (jenisRekap === 'um') {
-      url = import.meta.env.VITE_KEHADIRAN_API_URL + '/rekap/uang-makan'
-      param.unitGajiId = idGaji
-      if (idGaji) {
-        streamUrl += '&unitGajiId=' + idGaji
-      }
+      delete param.unitRemun
+      param.unitGaji = idGaji
     } else if (jenisRekap === 'remun') {
-      url = import.meta.env.VITE_KEHADIRAN_API_URL + '/rekap/remun'
-      param.unitRemunId = idGaji
-      if (idGaji) {
-        streamUrl += '&unitRemunId=' + idGaji
-      }
+      delete param.unitGaji
+      param.unitRemun = idGaji
     }
     if (!idGaji) {
-      delete param.unitGajiId
-      delete param.unitRemunId
+      delete param.unitGaji
+      delete param.unitRemun
     }
     try {
-      axios.post(url, param, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          apikey: import.meta.env.VITE_API_KEY,
+      axios.post(
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/rekap`,
+        {
+          ...param,
         },
-      })
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        },
+      )
       setRekap({ progress: 0 })
-      setTimeout(evt, 1000, streamUrl)
     } catch (error) {
       console.error(error)
     }
@@ -162,160 +160,155 @@ const Rekap = () => {
       )}
       {jenisRekap === 'um' && (
         <>
-          {rekap?.progress === 100 && (
-            <>
-              <CRow className="mb-4">
-                <CCol md={12}>
-                  <CButton
-                    component="a"
-                    href={
-                      import.meta.env.VITE_CDN_URL_REKAP_FOLDER +
-                      'uang_makan_pns_baru_' +
-                      rekap.namaFile +
-                      '.pdf'
-                    }
-                    color="link"
-                    target="_blank"
-                  >
-                    PNS PDF Format Baru
-                  </CButton>
-                  <CButton
-                    component="a"
-                    href={
-                      import.meta.env.VITE_CDN_URL_REKAP_FOLDER +
-                      'uang_makan_pns_baru_' +
-                      rekap.namaFile +
-                      '.xlsx'
-                    }
-                    color="link"
-                    target="_blank"
-                  >
-                    PNS Excel Format Baru
-                  </CButton>
-                  <CButton
-                    component="a"
-                    href={
-                      import.meta.env.VITE_CDN_URL_REKAP_FOLDER +
-                      'uang_makan_pns_lama_' +
-                      rekap.namaFile +
-                      '.pdf'
-                    }
-                    color="link"
-                    target="_blank"
-                  >
-                    PNS PDF Format Lama
-                  </CButton>
-                  <CButton
-                    component="a"
-                    href={
-                      import.meta.env.VITE_CDN_URL_REKAP_FOLDER +
-                      'uang_makan_pns_lama_' +
-                      rekap.namaFile +
-                      '.xlsx'
-                    }
-                    color="link"
-                    target="_blank"
-                  >
-                    PNS Excel Format Lama
-                  </CButton>
-                  <CButton
-                    component="a"
-                    href={
-                      import.meta.env.VITE_CDN_URL_REKAP_FOLDER +
-                      'uang_makan_pppk_lama_' +
-                      rekap.namaFile +
-                      '.pdf'
-                    }
-                    color="link"
-                    target="_blank"
-                  >
-                    PPPK PDF Format Lama
-                  </CButton>
-                  <CButton
-                    component="a"
-                    href={
-                      import.meta.env.VITE_CDN_URL_REKAP_FOLDER +
-                      'uang_makan_pppk_lama_' +
-                      rekap.namaFile +
-                      '.xlsx'
-                    }
-                    color="link"
-                    target="_blank"
-                  >
-                    PPPK Excel Format Lama
-                  </CButton>
-                </CCol>
-                <CCol md={12}>
-                  <p>
-                    digenerate oleh {rekap.lastModifiedBy} pada{' '}
-                    {dayjs(new Date(rekap.lastModifiedDate)).format('D/M/YYYY')}
-                  </p>
-                </CCol>
-                <CCol md={12}>
-                  <CButton color="warning" variant="ghost" onClick={onGenerate}>
-                    Generate Ulang?
-                  </CButton>
-                </CCol>
-              </CRow>
-            </>
+          {(rekap?.progress === 100 || !idGaji) && (
+            <CRow className="mb-4">
+              <CCol md={12} className="mb-3">
+                <CListGroup flush>
+                  <CListGroupItem>
+                    PNS Format Baru{' '}
+                    <CButton
+                      color="danger"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=um_baru&statusPegawai=PNS&unitGaji=${idGaji}`}
+                      target="_blank"
+                    >
+                      .pdf
+                    </CButton>
+                    <CButton
+                      color="success"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=um_baru&statusPegawai=PNS&unitGaji=${idGaji}`}
+                      target="_blank"
+                    >
+                      .xlsx
+                    </CButton>
+                  </CListGroupItem>
+                  <CListGroupItem>
+                    PNS Format Lama{' '}
+                    <CButton
+                      color="danger"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=um_lama&statusPegawai=PNS&unitGaji=${idGaji}`}
+                      target="_blank"
+                    >
+                      .pdf
+                    </CButton>
+                    <CButton
+                      color="success"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=um_lama&statusPegawai=PNS&unitGaji=${idGaji}`}
+                      target="_blank"
+                    >
+                      .xlsx
+                    </CButton>
+                  </CListGroupItem>
+                  <CListGroupItem>
+                    PPPK Format Lama{' '}
+                    <CButton
+                      color="danger"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=um_lama&statusPegawai=PPPK&unitGaji=${idGaji}`}
+                      target="_blank"
+                    >
+                      .pdf
+                    </CButton>
+                    <CButton
+                      color="success"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=um_lama&statusPegawai=PPPK&unitGaji=${idGaji}`}
+                      target="_blank"
+                    >
+                      .xlsx
+                    </CButton>
+                  </CListGroupItem>
+                </CListGroup>
+              </CCol>
+              {idGaji && (
+                <>
+                  <CCol md={12}>
+                    <p>
+                      digenerate oleh {rekap.lastModifiedBy} pada{' '}
+                      {dayjs(new Date(rekap.lastModifiedDate)).format('D/M/YYYY')}
+                    </p>
+                  </CCol>
+                  <CCol md={12}>
+                    <CButton color="warning" variant="outline" onClick={onGenerate}>
+                      Generate Ulang
+                    </CButton>
+                  </CCol>
+                </>
+              )}
+            </CRow>
           )}
         </>
       )}
       {jenisRekap === 'remun' && (
         <>
-          {rekap?.progress === 100 && (
+          {(rekap?.progress === 100 || !idGaji) && (
             <CRow className="mb-4">
-              <CCol md={12}>
-                <CButton
-                  component="a"
-                  href={
-                    import.meta.env.VITE_CDN_URL_REKAP_FOLDER + 'remun_' + rekap.namaFile + '.pdf'
-                  }
-                  color="link"
-                  target="_blank"
-                >
-                  PDF
-                </CButton>
-                <CButton
-                  component="a"
-                  href={
-                    import.meta.env.VITE_CDN_URL_REKAP_FOLDER + 'remun_' + rekap.namaFile + '.xlsx'
-                  }
-                  color="link"
-                  target="_blank"
-                >
-                  Excel
-                </CButton>
-                <CButton
-                  component="a"
-                  href={
-                    import.meta.env.VITE_CDN_URL_REKAP_FOLDER +
-                    'remun_grade_' +
-                    rekap.namaFile +
-                    '.xlsx'
-                  }
-                  color="link"
-                  target="_blank"
-                >
-                  Grade
-                </CButton>
+              <CCol md={12} className="mb-3">
+                <CListGroup flush>
+                  <CListGroupItem>
+                    Remun Pegawai{' '}
+                    <CButton
+                      color="danger"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=remun&unitRemun=${idGaji}`}
+                      target="_blank"
+                    >
+                      .pdf
+                    </CButton>
+                    <CButton
+                      color="success"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=remun&unitRemun=${idGaji}`}
+                      target="_blank"
+                    >
+                      .xlsx
+                    </CButton>
+                  </CListGroupItem>
+                  <CListGroupItem>
+                    Remun Grade{' '}
+                    <CButton
+                      color="success"
+                      variant="ghost"
+                      className="rounded-pill"
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=remun_grade&unitRemun=${idGaji}`}
+                      target="_blank"
+                    >
+                      .xlsx
+                    </CButton>
+                  </CListGroupItem>
+                </CListGroup>
               </CCol>
-              <CCol md={12}>
-                <p>
-                  digenerate oleh {rekap.lastModifiedBy} pada{' '}
-                  {dayjs(new Date(rekap.lastModifiedDate)).format('D/M/YYYY')}
-                </p>
-              </CCol>
-              <CCol md={12}>
-                <CButton color="warning" variant="ghost" onClick={onGenerate}>
-                  Generate Ulang?
-                </CButton>
-              </CCol>
+              {idGaji && (
+                <>
+                  <CCol md={12}>
+                    <p>
+                      digenerate oleh {rekap.lastModifiedBy} pada{' '}
+                      {dayjs(new Date(rekap.lastModifiedDate)).format('D/M/YYYY')}
+                    </p>
+                  </CCol>
+                  <CCol md={12}>
+                    <CButton color="warning" variant="outline" onClick={onGenerate}>
+                      Generate Ulang
+                    </CButton>
+                  </CCol>
+                </>
+              )}
             </CRow>
           )}
         </>
       )}
-      {!rekap && jenisRekap && (
+      {!rekap && jenisRekap && idGaji && (
         <CButton color="primary" onClick={onGenerate}>
           Generate
         </CButton>

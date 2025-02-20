@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import {
@@ -11,17 +11,20 @@ import {
   CModalTitle,
   CSpinner,
 } from '@coreui/react-pro'
+import { KeycloakContext } from 'src/context'
 
 const DeletePengumumanModal = (props) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
 
+  const keycloak = useContext(KeycloakContext)
+
   async function hapusAction() {
     try {
       setLoading(true)
-      await axios.delete(import.meta.env.VITE_SSO_API_URL + '/apps/simpeg/welcome/' + props.id, {
+      await axios.delete(`${import.meta.env.VITE_SIMPEG_REST_URL}/pengumuman/${props.id}`, {
         headers: {
-          apikey: import.meta.env.VITE_API_KEY,
+          Authorization: `Bearer ${keycloak.token}`,
         },
       })
       props.done()

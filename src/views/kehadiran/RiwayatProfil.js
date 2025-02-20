@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {
   CAlert,
   CButton,
@@ -17,6 +17,7 @@ import axios from 'axios'
 import UbahRiwayatProfilModal from '../../components/kehadiran/UbahRiwayatProfilModal'
 import HapusRiwayatProfilModal from '../../components/kehadiran/HapusRiwayatProfilModal'
 import TambahRiwayatProfilModal from '../../components/kehadiran/TambahRiwayatProfilModal'
+import { KeycloakContext } from 'src/context'
 
 const formatter = new Intl.NumberFormat('id-ID', {
   style: 'currency',
@@ -27,6 +28,7 @@ const RiwayatProfil = () => {
   console.debug('rendering... RiwayatProfil')
 
   const date = new Date()
+  const keycloak = useContext(KeycloakContext)
 
   const [idPegawai, setIdPegawai] = useState('')
   const [tahun, setTahun] = useState(date.getFullYear())
@@ -42,7 +44,6 @@ const RiwayatProfil = () => {
   const columns = [
     {
       key: 'bulan',
-      // label: '#',
       _props: { scope: 'col' },
     },
     {
@@ -56,7 +57,6 @@ const RiwayatProfil = () => {
     },
     {
       key: 'jenisJabatan',
-      // label: 'Heading',
       _props: { scope: 'col' },
     },
     {
@@ -123,7 +123,7 @@ const RiwayatProfil = () => {
               color="warning"
               variant="outline"
               size="sm"
-              onClick={(e) => editModalAction(data[i])}
+              onClick={() => editModalAction(data[i])}
             >
               <CIcon icon={cilPencil} />
             </CButton>
@@ -154,17 +154,17 @@ const RiwayatProfil = () => {
     setLoading(true)
     axios
       .get(
-        import.meta.env.VITE_KEHADIRAN_API_URL +
-          '/pegawai/' +
-          idPegawai +
-          '/riwayat-profil?' +
-          'tahun=' +
-          tahun,
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/pegawai/${idPegawai}/riwayat-profil?tahun=${tahun}`,
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        },
       )
       .then(function (response) {
         // handle success
         // console.log(response)
-        setData(response.data)
+        setData(response.data.riwayatProfil)
       })
       .catch(function (error) {
         // handle error

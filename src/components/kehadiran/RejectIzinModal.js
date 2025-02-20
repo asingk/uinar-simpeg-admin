@@ -34,21 +34,16 @@ const RejectIzinModal = (props) => {
     if (!ket) return
     setLoading(true)
     axios
-      .post(
-        import.meta.env.VITE_KEHADIRAN_API_URL +
-          '/pegawai/' +
-          props.nip +
-          '/usul-izin/' +
-          props.id +
-          '/tolak',
+      .put(
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/usul-izin/${props.id}`,
         {
           updatedBy: loginId,
           ket: ket,
+          status: 2,
         },
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            apikey: import.meta.env.VITE_API_KEY,
+            Authorization: `Bearer ${keycloak.token}`,
           },
         },
       )

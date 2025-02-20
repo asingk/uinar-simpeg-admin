@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import {
@@ -11,17 +11,20 @@ import {
   CModalHeader,
   CModalTitle,
 } from '@coreui/react-pro'
+import { KeycloakContext } from 'src/context'
 
 const HapusRiwayatProfilModal = (props) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
 
+  const keycloak = useContext(KeycloakContext)
+
   async function hapusAction() {
     try {
       setLoading(true)
-      await axios.delete(import.meta.env.VITE_KEHADIRAN_API_URL + '/riwayat-profil/' + props.id, {
+      await axios.delete(`${import.meta.env.VITE_SIMPEG_REST_URL}/riwayat-profil/${props.id}`, {
         headers: {
-          apikey: import.meta.env.VITE_API_KEY,
+          Authorization: `Bearer ${keycloak.token}`,
         },
       })
       props.deleted()

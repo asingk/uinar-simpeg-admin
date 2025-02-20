@@ -12,6 +12,7 @@ import {
   CSpinner,
 } from '@coreui/react-pro'
 import { KeycloakContext } from 'src/context'
+import axios from 'axios'
 
 const TambahKehadiranModal = (props) => {
   const [loading, setLoading] = useState(false)
@@ -23,35 +24,35 @@ const TambahKehadiranModal = (props) => {
   const tambahAction = async () => {
     setError(false)
     setLoading(true)
-    const resp = await fetch(
-      import.meta.env.VITE_KEHADIRAN_API_URL +
-        '/kehadiran/tambah?idPegawai=' +
-        props.idPegawai +
-        '&tanggal=' +
-        props.tanggal +
-        '&status=' +
-        props.status +
-        '&addedBy=' +
-        loginId,
-      {
-        method: 'POST',
-        headers: {
-          apikey: import.meta.env.VITE_API_KEY,
+    await axios
+      .post(
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/kehadiran/tambah`,
+        {
+          idPegawai: props.idPegawai,
+          tanggal: props.tanggal,
+          status: props.status,
+          createdBy: loginId,
         },
-      },
-    )
-    if (resp.ok) {
-      setLoading(false)
-      props.added()
-    } else {
-      setLoading(false)
-      setError(true)
-    }
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        },
+      )
+      .then(function () {
+        props.added()
+      })
+      .catch(function () {
+        setError(true)
+      })
+      .finally(function () {
+        setLoading(false)
+      })
   }
 
   let modalBody = (
     <p>
-      Anda yakin ingin menambah {props.status} pada {dayjs(props.tanggal).format('DD/MM/YYYY')}?
+      Anda yakin ingin menambah {props.status} pada {dayjs(props.tanggal).format('D/M/YYYY')}?
     </p>
   )
 

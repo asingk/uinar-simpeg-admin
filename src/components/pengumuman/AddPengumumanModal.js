@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import {
@@ -17,6 +17,7 @@ import {
 } from '@coreui/react-pro'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import { KeycloakContext } from 'src/context'
 
 const modules = {
   toolbar: [
@@ -43,7 +44,7 @@ const AddPengumumanModal = (props) => {
   const [statusPegawai, setStatusPegawai] = useState([])
   const [jenisJabatan, setJenisJabatan] = useState([])
 
-  // let stat = [1, 2, 3, 4, 5]
+  const keycloak = useContext(KeycloakContext)
 
   const handleStatusPegawai = (e) => {
     // Destructuring
@@ -57,12 +58,9 @@ const AddPengumumanModal = (props) => {
 
     // Case 2  : The user unchecks the box
     else {
-      // stat = stat.filter((e) => e !== Number(value))
       setStatusPegawai(statusPegawai.filter((e) => e !== Number(value)))
     }
   }
-
-  // let jenisJab = ['DS', 'DT', 'Tendik']
 
   const handleJenisJabatan = (e) => {
     const { value, checked } = e.target
@@ -75,7 +73,6 @@ const AddPengumumanModal = (props) => {
 
     // Case 2  : The user unchecks the box
     else {
-      // jenisJab = jenisJab.filter((e) => e !== value)
       setJenisJabatan(jenisJabatan.filter((e) => e !== value))
     }
   }
@@ -97,7 +94,6 @@ const AddPengumumanModal = (props) => {
           id="inlineCheckbox1"
           value="1"
           label="PNS"
-          // defaultChecked
           checked={statusPegawai.includes(1)}
           onChange={handleStatusPegawai}
         />
@@ -106,7 +102,6 @@ const AddPengumumanModal = (props) => {
           id="inlineCheckbox2"
           value="2"
           label="CPNS"
-          // defaultChecked
           checked={statusPegawai.includes(2)}
           onChange={handleStatusPegawai}
         />
@@ -115,7 +110,6 @@ const AddPengumumanModal = (props) => {
           id="inlineCheckbox3"
           value="5"
           label="PPPK"
-          // defaultChecked
           checked={statusPegawai.includes(5)}
           onChange={handleStatusPegawai}
         />
@@ -124,7 +118,6 @@ const AddPengumumanModal = (props) => {
           id="inlineCheckbox4"
           value="4"
           label="PNS DPB"
-          // defaultChecked
           checked={statusPegawai.includes(4)}
           onChange={handleStatusPegawai}
         />
@@ -133,7 +126,6 @@ const AddPengumumanModal = (props) => {
           id="inlineCheckbox5"
           value="3"
           label="Non ASN"
-          // defaultChecked
           checked={statusPegawai.includes(3)}
           onChange={handleStatusPegawai}
         />
@@ -146,7 +138,6 @@ const AddPengumumanModal = (props) => {
           id="inlineCheckbox6"
           value="DS"
           label="DS"
-          // defaultChecked
           checked={jenisJabatan.includes('DS')}
           onChange={handleJenisJabatan}
         />
@@ -155,7 +146,6 @@ const AddPengumumanModal = (props) => {
           id="inlineCheckbox7"
           value="DT"
           label="DT"
-          // defaultChecked
           checked={jenisJabatan.includes('DT')}
           onChange={handleJenisJabatan}
         />
@@ -164,7 +154,6 @@ const AddPengumumanModal = (props) => {
           id="inlineCheckbox8"
           value="Tendik"
           label="Tendik"
-          // defaultChecked
           checked={jenisJabatan.includes('Tendik')}
           onChange={handleJenisJabatan}
         />
@@ -211,7 +200,7 @@ const AddPengumumanModal = (props) => {
     try {
       setLoading(true)
       await axios.post(
-        import.meta.env.VITE_SSO_API_URL + '/apps/simpeg/welcome',
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/pengumuman`,
         {
           isActive: isActive,
           nama: nama,
@@ -221,7 +210,7 @@ const AddPengumumanModal = (props) => {
         },
         {
           headers: {
-            apikey: import.meta.env.VITE_API_KEY,
+            Authorization: `Bearer ${keycloak.token}`,
           },
         },
       )

@@ -29,7 +29,6 @@ import { KeycloakContext } from 'src/context'
 const RiwayatHadir = () => {
   console.debug('rendering... RiwayatHadir')
 
-  // const navigate = useNavigate()
   const date = new Date()
   const keycloak = useContext(KeycloakContext)
   const role = keycloak.resourceAccess['simpeg-admin']?.roles[0]
@@ -68,15 +67,14 @@ const RiwayatHadir = () => {
   const searchProfilRiwayat = async () => {
     try {
       const respRiwayatProfil = await axios.get(
-        import.meta.env.VITE_KEHADIRAN_API_URL +
-          '/pegawai/' +
-          idPegawai +
-          '/riwayat-profil?bulan=' +
-          bulan +
-          '&tahun=' +
-          tahun,
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/pegawai/${idPegawai}/riwayat-profil?bulan=${bulan}&tahun=${tahun}`,
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        },
       )
-      setProfilRiwayat(respRiwayatProfil.data[0])
+      setProfilRiwayat(respRiwayatProfil.data.riwayatProfil[0])
     } catch (err) {
       // handle error
       // console.log(error.message)
@@ -93,15 +91,14 @@ const RiwayatHadir = () => {
   const searchRiwayatHadir = async () => {
     try {
       const respRiwayatHadir = await axios.get(
-        import.meta.env.VITE_KEHADIRAN_API_URL +
-          '/pegawai/' +
-          idPegawai +
-          '/riwayat-hadir?bulan=' +
-          bulan +
-          '&tahun=' +
-          tahun,
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/pegawai/${idPegawai}/riwayat-kehadiran?bulan=${bulan}&tahun=${tahun}`,
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+        },
       )
-      setRiwayat(respRiwayatHadir.data)
+      setRiwayat(respRiwayatHadir.data.riwayatKehadiran.reverse())
     } catch (err) {
       // handle error
       // console.log(error.message)
@@ -195,9 +192,7 @@ const RiwayatHadir = () => {
     if (riwayat.length > 0) {
       rows = riwayat.map((item) => (
         <CTableRow key={item.tanggal}>
-          <CTableHeaderCell scope="row">
-            {dayjs(item.tanggal).format('DD/MM/YYYY')}
-          </CTableHeaderCell>
+          <CTableHeaderCell scope="row">{dayjs(item.tanggal).format('D/M/YYYY')}</CTableHeaderCell>
           <CTableDataCell>
             {item.keteranganDatang || (item.jamDatang ? item.jamDatang.substr(0, 5) : '-')}
           </CTableDataCell>
@@ -240,7 +235,7 @@ const RiwayatHadir = () => {
                 color="info"
                 variant="outline"
                 size="sm"
-                onClick={(e) => showTambahModal(item.tanggal, 'PULANG')}
+                onClick={() => showTambahModal(item.tanggal, 'PULANG')}
                 disabled={role === 'keuangan'}
               >
                 <CIcon icon={cilPlus} size="sm" />
