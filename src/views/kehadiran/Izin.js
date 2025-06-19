@@ -109,6 +109,11 @@ const Izin = () => {
       _props: { scope: 'col' },
     },
     {
+      key: 'createdDate',
+      label: 'Pengajuan',
+      _props: { scope: 'col' },
+    },
+    {
       key: 'file',
       label: '',
       _props: { scope: 'col' },
@@ -134,6 +139,7 @@ const Izin = () => {
         tanggal:
           dayjs(data[i].startDate).format('D/M/YYYY') +
           (data[i].endDate ? ' - ' + dayjs(data[i].endDate).format('D/M/YYYY') : ''),
+        createdDate: data[i].createdDate ? dayjs(data[i].createdDate).format('D/M/YYYY') : '',
         file: (
           <CButton
             color="info"
