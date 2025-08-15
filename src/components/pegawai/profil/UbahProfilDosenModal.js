@@ -27,7 +27,6 @@ const UPSERT_PEGAWAI_PROFIL_DOSEN = gql`
 const UbahProfilDosenModal = (props) => {
   const [prodiId, setProdiId] = useState(props.pegawai?.dosen?.prodi?.id)
   const [fakultasId, setFakultasId] = useState(props.pegawai?.dosen?.prodi?.fakultas.id)
-  const [nidn, setNidn] = useState(props.pegawai?.dosen?.nidn)
   const [sintaId, setSintaId] = useState(props.pegawai?.dosen?.sintaId)
   const [scopusId, setScopusId] = useState(props.pegawai?.dosen?.scopusId)
   const [wosId, setWosId] = useState(props.pegawai?.dosen?.wosId)
@@ -43,7 +42,6 @@ const UbahProfilDosenModal = (props) => {
         variables: {
           pegawaiId: props.pegawai.id,
           input: {
-            nidn: nidn,
             sintaId: sintaId,
             scopusId: scopusId,
             wosId: wosId,
@@ -84,17 +82,6 @@ const UbahProfilDosenModal = (props) => {
               changeFakultas={(id) => setFakultasId(id)}
               prodiId={prodiId}
               changeProdiId={(id) => setProdiId(id)}
-            />
-            <CFormInput
-              type="text"
-              id="nidnInput"
-              defaultValue={nidn}
-              floatingClassName="mb-3"
-              floatingLabel="NIDN"
-              placeholder="NDIN"
-              onChange={(e) => {
-                setNidn(e.target.value)
-              }}
             />
             <CFormInput
               type="text"
