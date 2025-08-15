@@ -31,6 +31,22 @@ const Pribadi = ({ pegawai }) => {
         {pegawai.statusPegawai.isSync && (
           <CCol>
             <CRow>
+              <CCol sm={3}>NIK</CCol>
+              <CCol sm={9}>{pegawai.nik}</CCol>
+            </CRow>
+          </CCol>
+        )}
+        {pegawai.statusPegawai.isSync && (
+          <CCol>
+            <CRow>
+              <CCol sm={3}>NUPTK</CCol>
+              <CCol sm={9}>{pegawai.nuptk}</CCol>
+            </CRow>
+          </CCol>
+        )}
+        {pegawai.statusPegawai.isSync && (
+          <CCol>
+            <CRow>
               <CCol sm={3}>Tempat Lahir</CCol>
               <CCol sm={9}>{pegawai.tempatLahir}</CCol>
             </CRow>
@@ -103,14 +119,6 @@ const Pribadi = ({ pegawai }) => {
         {pegawai.statusPegawai.isSync && (
           <CCol>
             <CRow className="mb-3">
-              <CCol sm={3}>Usia Pensiun</CCol>
-              <CCol sm={9}>{pegawai.usiaPensiun || ''}</CCol>
-            </CRow>
-          </CCol>
-        )}
-        {pegawai.statusPegawai.isSync && (
-          <CCol>
-            <CRow className="mb-3">
               <CCol sm={3}>TMT Pensiun</CCol>
               <CCol sm={9}>
                 {pegawai.tmtPensiun ? dayjs(pegawai.tmtPensiun).format('D/M/YYYY') : ''}
@@ -156,6 +164,8 @@ Pribadi.fragments = {
   entry: gql`
     fragment PribadiFragment on Pegawai {
       nama
+      nik
+      nuptk
       tempatLahir
       tglLahir
       jenisKelamin
@@ -168,7 +178,6 @@ Pribadi.fragments = {
       }
       tmtPangkatYad
       tmtKgbYad
-      usiaPensiun
       tmtPensiun
       unitGaji {
         id
