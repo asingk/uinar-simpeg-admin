@@ -130,6 +130,7 @@ const Rekap = () => {
 
   return (
     <div>
+      <h1 className="text-center">Rekap</h1>
       <CRow>
         <CCol md="4" className="mb-4">
           <SelectBulanTahunRekapRemun

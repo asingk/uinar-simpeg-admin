@@ -3,6 +3,7 @@ import CIcon from '@coreui/icons-react'
 import {
   cilBriefcase,
   cilFingerprint,
+  cilMoney,
   cilNotes,
   cilPeople,
   cilSitemap,
@@ -75,6 +76,19 @@ const _nav = [
         component: CNavItem,
         name: 'Izin',
         to: '/kehadiran/izin',
+      },
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: <Translation>{(t) => t('Keuangan')}</Translation>,
+    to: '/keuangan',
+    icon: <CIcon icon={cilMoney} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Gaji',
+        to: '/keuangan/gaji',
       },
     ],
   },

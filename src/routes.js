@@ -15,6 +15,7 @@ const RiwayatIzin = React.lazy(() => import('./views/kehadiran/RiwayatIzin'))
 const StrukturJabatan = React.lazy(() => import('./views/struktur-jabatan/StrukturJabatan'))
 const StrukturUker = React.lazy(() => import('./views/struktur-uker/StrukturUnitKerja'))
 const Pengumuman = React.lazy(() => import('./views/pengumuman/Pengumuman'))
+const Gaji = React.lazy(() => import('./views/keuangan/Gaji'))
 
 const routes = [
   { path: '/', exact: true, name: <Translation>{(t) => t('home')}</Translation> },
@@ -65,6 +66,13 @@ const routes = [
     name: <Translation>{(t) => t('Pengumuman')}</Translation>,
     element: Pengumuman,
   },
+  {
+    path: '/keuangan',
+    name: <Translation>{(t) => t('Keuangan')}</Translation>,
+    element: Gaji,
+    exact: true,
+  },
+  { path: '/keuangan/gaji', name: 'Gaji', element: Gaji },
 ]
 
 export default routes
