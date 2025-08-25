@@ -20,6 +20,7 @@ const Tabel = (props) => {
         no={no_table}
         nip={pegawais[index].id}
         nama={pegawais[index].nama}
+        jabatan={pegawais[index].jabatanSaatIni?.level?.nama}
       />,
     )
   }
@@ -45,6 +46,7 @@ const Tabel = (props) => {
             )}
           </CTableHeaderCell>
           <CTableHeaderCell scope="col">Nama</CTableHeaderCell>
+          <CTableHeaderCell scope="col">Jabatan</CTableHeaderCell>
         </CTableRow>
       </CTableHead>
       <CTableBody>{rows}</CTableBody>

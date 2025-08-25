@@ -29,6 +29,11 @@ const GET_DAFTAR_PEGAWAI = gql`
           id
           nama
         }
+        jabatanSaatIni {
+          level {
+            nama
+          }
+        }
       }
     }
   }

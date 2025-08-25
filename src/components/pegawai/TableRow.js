@@ -15,6 +15,7 @@ export default function TableRow(props) {
       <CTableHeaderCell scope="row">{props.no}</CTableHeaderCell>
       <CTableDataCell>{props.nip}</CTableDataCell>
       <CTableDataCell>{props.nama}</CTableDataCell>
+      <CTableDataCell>{props.jabatan}</CTableDataCell>
     </CTableRow>
   )
 }
