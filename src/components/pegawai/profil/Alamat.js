@@ -9,7 +9,13 @@ const Alamat = ({ pegawai }) => {
       <CCol>
         <CRow>
           <CCol sm={3}>Alamat</CCol>
-          <CCol sm={9}>{pegawai.alamat?.deskripsi}</CCol>
+          <CCol sm={9}>{pegawai.alamat?.deskripsi1}</CCol>
+        </CRow>
+      </CCol>
+      <CCol>
+        <CRow>
+          <CCol sm={3}>Kelurahan</CCol>
+          <CCol sm={9}>{pegawai.alamat?.deskripsi2}</CCol>
         </CRow>
       </CCol>
       <CCol>
@@ -42,7 +48,8 @@ Alamat.fragments = {
   entry: gql`
     fragment AlamatFragment on Pegawai {
       alamat {
-        deskripsi
+        deskripsi1
+        deskripsi2
         kabKota
         provinsi
         kodePos
