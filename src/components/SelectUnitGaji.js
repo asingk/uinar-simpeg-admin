@@ -8,6 +8,7 @@ const GET_DAFTAR_HOMEBASE_GAJI = gql`
     daftarUnitGaji {
       id
       nama
+      kodeAnakSatker
     }
   }
 `
@@ -34,7 +35,7 @@ const SelectUnitGaji = (props) => {
 
   gajis.forEach((row) => {
     const gaji = {
-      value: row.id,
+      value: row.kodeAnakSatker,
       label: row.nama,
     }
     gajiOptions.push(gaji)

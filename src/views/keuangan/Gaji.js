@@ -13,15 +13,14 @@ import {
   CToastBody,
   CToastClose,
   CToaster,
-  CToastHeader,
 } from '@coreui/react-pro'
 import CIcon from '@coreui/icons-react'
 import { cilCloudUpload, cilSearch } from '@coreui/icons'
 import SelectTahun from '../../components/kehadiran/SelectTahun'
 import axios from 'axios'
 import { KeycloakContext } from 'src/context'
-import SelectUnitGaji from 'src/components/SelectUnitGaji'
 import dayjs from 'dayjs'
+import SelectKodeAnakSatker from 'src/components/keuangan/SelectKodeAnakSatker'
 
 const Gaji = () => {
   console.debug('rendering... Gaji')
@@ -47,8 +46,8 @@ const Gaji = () => {
       _props: { scope: 'col' },
     },
     {
-      key: 'unitGajiId',
-      label: 'Unit Gaji',
+      key: 'kodeAnakSatker',
+      label: 'Kode Anak Satker',
       _props: { scope: 'col' },
     },
     {
@@ -68,7 +67,7 @@ const Gaji = () => {
     for (let i = 0; i < data.length; i++) {
       const item = {
         bulan: data[i].bulan,
-        unitGajiId: data[i].unitGajiId,
+        kodeAnakSatker: data[i].kodeAnakSatker,
         lastModifiedDate: dayjs(data[i].lastModifiedDate).format('D/M/YYYY'),
         lastModifiedBy: data[i].lastModifiedBy,
         _cellProps: { id: { scope: 'row' } },
@@ -87,7 +86,7 @@ const Gaji = () => {
     setLoadingTable(true)
     axios
       .get(
-        `${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/gaji?tahun=${tahun}&unitGajiId=${idGaji}`,
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/gaji?tahun=${tahun}&kodeAnakSatker=${idGaji}`,
         {
           headers: {
             Authorization: `Bearer ${keycloak.token}`,
@@ -227,7 +226,7 @@ const Gaji = () => {
             />
           </CCol>
           <CCol md={4}>
-            <SelectUnitGaji setIdGaji={(id) => setIdGaji(id)} />
+            <SelectKodeAnakSatker setIdGaji={(id) => setIdGaji(id)} />
           </CCol>
           <CCol className="d-grid gap-2 d-md-block">
             <CButton type="submit" onClick={onSearchButton} color="primary">
