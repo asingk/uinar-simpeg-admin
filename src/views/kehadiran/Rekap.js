@@ -166,12 +166,12 @@ const Rekap = () => {
               <CCol md={12} className="mb-3">
                 <CListGroup flush>
                   <CListGroupItem>
-                    PNS Format Baru{' '}
+                    Format Baru{' '}
                     <CButton
                       color="danger"
                       variant="ghost"
                       className="rounded-pill"
-                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=um_baru&statusPegawai=PNS&unitGaji=${idGaji}`}
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=um_baru&unitGaji=${idGaji}`}
                       target="_blank"
                     >
                       .pdf
@@ -180,19 +180,19 @@ const Rekap = () => {
                       color="success"
                       variant="ghost"
                       className="rounded-pill"
-                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=um_baru&statusPegawai=PNS&unitGaji=${idGaji}`}
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=um_baru&unitGaji=${idGaji}`}
                       target="_blank"
                     >
                       .xlsx
                     </CButton>
                   </CListGroupItem>
                   <CListGroupItem>
-                    PNS Format Lama{' '}
+                    Format Lama{' '}
                     <CButton
                       color="danger"
                       variant="ghost"
                       className="rounded-pill"
-                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=um_lama&statusPegawai=PNS&unitGaji=${idGaji}`}
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=um_lama&unitGaji=${idGaji}`}
                       target="_blank"
                     >
                       .pdf
@@ -201,28 +201,7 @@ const Rekap = () => {
                       color="success"
                       variant="ghost"
                       className="rounded-pill"
-                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=um_lama&statusPegawai=PNS&unitGaji=${idGaji}`}
-                      target="_blank"
-                    >
-                      .xlsx
-                    </CButton>
-                  </CListGroupItem>
-                  <CListGroupItem>
-                    PPPK Format Lama{' '}
-                    <CButton
-                      color="danger"
-                      variant="ghost"
-                      className="rounded-pill"
-                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=pdf&jenisRekap=um_lama&statusPegawai=PPPK&unitGaji=${idGaji}`}
-                      target="_blank"
-                    >
-                      .pdf
-                    </CButton>
-                    <CButton
-                      color="success"
-                      variant="ghost"
-                      className="rounded-pill"
-                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=um_lama&statusPegawai=PPPK&unitGaji=${idGaji}`}
+                      href={`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/download?tahun=${tahun}&bulan=${bulan}&fileType=xlsx&jenisRekap=um_lama&unitGaji=${idGaji}`}
                       target="_blank"
                     >
                       .xlsx
