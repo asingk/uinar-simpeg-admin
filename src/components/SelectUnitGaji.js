@@ -35,7 +35,7 @@ const SelectUnitGaji = (props) => {
 
   gajis.forEach((row) => {
     const gaji = {
-      value: row.kodeAnakSatker,
+      value: row.id,
       label: row.nama,
     }
     gajiOptions.push(gaji)
