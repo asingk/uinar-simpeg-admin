@@ -8,26 +8,41 @@ const SelectBulanTahun = (props) => {
     props.setSelect(e.target.value.substring(4), e.target.value.substring(0, 4))
   }
 
+  // Gunakan parameter dari props atau default ke tanggal sekarang
   const date = new Date()
-  let thisYear = date.getFullYear()
-  let thisMonth = date.getMonth() + 1
+  const defaultYear = date.getFullYear()
+  const defaultMonth = date.getMonth() + 1
+
+  const startYear = props.startYear || defaultYear
+  const startMonth = props.startMonth || defaultMonth
+  const endYear = props.endYear || defaultYear - 1
+  const endMonth = props.endMonth || 1
 
   let options = []
-  for (let i = thisMonth; i > 0; i--) {
+
+  // Loop dari tahun dan bulan mulai sampai tahun dan bulan akhir
+  let currentYear = startYear
+  let currentMonth = startMonth
+
+  while (currentYear > endYear || (currentYear === endYear && currentMonth >= endMonth)) {
     let opt = {
-      label: namaBulan(i) + ' ' + thisYear,
-      value: thisYear.toString() + i.toString(),
+      label: namaBulan(currentMonth) + ' ' + currentYear,
+      value: currentYear.toString() + currentMonth.toString(),
     }
-    if (i === thisMonth) opt.selected = true
-    options.push(opt)
-  }
-  for (let i = 12; i > 0; i--) {
-    const lastYear = thisYear - 1
-    let opt = {
-      label: namaBulan(i) + ' ' + lastYear,
-      value: lastYear.toString() + i.toString(),
+
+    // Set selected untuk bulan pertama (atau bulan sekarang jika dalam range)
+    if (currentYear === startYear && currentMonth === startMonth) {
+      opt.selected = true
     }
+
     options.push(opt)
+
+    // Mundur ke bulan sebelumnya
+    currentMonth--
+    if (currentMonth < 1) {
+      currentMonth = 12
+      currentYear--
+    }
   }
 
   return (
@@ -41,6 +56,10 @@ const SelectBulanTahun = (props) => {
 
 SelectBulanTahun.propTypes = {
   setSelect: PropTypes.func,
+  startYear: PropTypes.number, // Tahun mulai (default: tahun sekarang)
+  startMonth: PropTypes.number, // Bulan mulai (default: bulan sekarang)
+  endYear: PropTypes.number, // Tahun akhir (default: tahun lalu)
+  endMonth: PropTypes.number, // Bulan akhir (default: 1/Januari)
 }
 
 export default SelectBulanTahun

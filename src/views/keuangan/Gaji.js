@@ -2,6 +2,9 @@ import React, { useContext, useRef, useState } from 'react'
 import {
   CAlert,
   CButton,
+  CCard,
+  CCardBody,
+  CCardHeader,
   CCol,
   CForm,
   CFormInput,
@@ -94,23 +97,15 @@ const Gaji = () => {
         },
       )
       .then(function (response) {
-        // handle success
-        // console.log(response)
         setData(response.data.rekapGaji)
       })
       .catch(function (error) {
-        // handle error
         console.debug(error.message)
         if (error.response) {
-          // The client was given an error response (5xx, 4xx)
-          // setErrorResp(true)
           setErrorTable(error.response.data.message)
-        } else {
-          // setErrorProfilRiwayat('Ooops... terjadi kesalahan!')
         }
       })
       .finally(function () {
-        // always executed
         setLoadingTable(false)
       })
   }
@@ -146,22 +141,17 @@ const Gaji = () => {
           },
         },
       )
-      // setLoading(false)
       setFile(null)
       addToast(exampleToast)
+      // Refresh tabel setelah upload berhasil
+      search()
     } catch (error) {
       if (error.response) {
         console.debug(error)
-        // The client was given an error response (5xx, 4xx)
-        // setLoading(false)
-        // setErrorResp(true)
         setErrorUpload(error.response.data.message)
       } else {
         console.debug(error)
         setErrorUpload('Ops... Terjadi kesalahan.')
-        // Anything else
-        // setLoading(false)
-        // setError(true)
       }
     } finally {
       setLoadingUpload(false)
@@ -181,7 +171,7 @@ const Gaji = () => {
   } else if (errorTable) {
     table = <CAlert color="danger">Error: {errorTable}</CAlert>
   } else {
-    table = <CTable striped responsive columns={columns} items={items} className="mb-3" />
+    table = <CTable striped responsive columns={columns} items={items} className="mb-0" />
   }
 
   const exampleToast = (
@@ -195,47 +185,84 @@ const Gaji = () => {
 
   return (
     <>
-      <h1 className="text-center">Gaji</h1>
-      <CForm className="row g-3 my-3" onSubmit={onAdd}>
-        <CRow className="justify-content-start" xs={{ gutterY: 2 }}>
-          <CCol md={6}>
-            <CFormInput
-              type="file"
-              id="uploadGajiFormFile"
-              accept=".xlsx"
-              onChange={handleFileChange}
-              required
-            />
-          </CCol>
-          <CCol className="d-grid gap-2 d-md-block">
-            <CLoadingButton color="primary" type="submit" loading={loadingUpload}>
-              <CIcon icon={cilCloudUpload} /> Upload
-            </CLoadingButton>
-          </CCol>
-        </CRow>
-      </CForm>
-      {errorUpload && <CAlert color="danger">Error: {errorUpload}</CAlert>}
-      <CForm className="row g-3 my-3">
-        <CRow className="justify-content-start" xs={{ gutterY: 2 }}>
-          <CCol md={3}>
-            <SelectTahun
-              setSelect={(id) => setTahun(id)}
-              end={2025}
-              start={date.getFullYear()}
-              tahun={tahun}
-            />
-          </CCol>
-          <CCol md={4}>
-            <SelectKodeAnakSatker setIdGaji={(id) => setIdGaji(id)} />
-          </CCol>
-          <CCol className="d-grid gap-2 d-md-block">
-            <CButton type="submit" onClick={onSearchButton} color="primary">
-              <CIcon icon={cilSearch}></CIcon>
-            </CButton>
-          </CCol>
-        </CRow>
-      </CForm>
-      {table}
+      <h1 className="mb-4 text-center">Gaji</h1>
+
+      {/* Card Upload */}
+      <CCard className="mb-4">
+        <CCardHeader className="d-flex align-items-center">
+          <CIcon icon={cilCloudUpload} className="me-2" />
+          <strong>Upload Rekap Gaji</strong>
+        </CCardHeader>
+        <CCardBody>
+          <CForm onSubmit={onAdd}>
+            <CRow className="g-3 align-items-end">
+              <CCol md={8} lg={6}>
+                <label htmlFor="uploadGajiFormFile" className="form-label mb-2">
+                  Pilih File Excel (.xlsx)
+                </label>
+                <CFormInput
+                  type="file"
+                  id="uploadGajiFormFile"
+                  accept=".xlsx"
+                  onChange={handleFileChange}
+                  required
+                />
+              </CCol>
+              <CCol md={4} lg={3}>
+                <CLoadingButton
+                  color="primary"
+                  type="submit"
+                  loading={loadingUpload}
+                  className="w-100"
+                >
+                  <CIcon icon={cilCloudUpload} className="me-2" />
+                  Upload
+                </CLoadingButton>
+              </CCol>
+            </CRow>
+            {errorUpload && (
+              <CAlert color="danger" className="mt-3 mb-0">
+                {errorUpload}
+              </CAlert>
+            )}
+          </CForm>
+        </CCardBody>
+      </CCard>
+
+      {/* Card Tabel */}
+      <CCard className="mb-4">
+        <CCardHeader className="d-flex align-items-center">
+          <CIcon icon={cilSearch} className="me-2" />
+          <strong>Daftar Rekap Gaji</strong>
+        </CCardHeader>
+        <CCardBody>
+          <CForm onSubmit={onSearchButton}>
+            <CRow className="g-3 align-items-end mb-3">
+              <CCol md={6} lg={3}>
+                <label className="form-label mb-2">Tahun</label>
+                <SelectTahun
+                  setSelect={(id) => setTahun(id)}
+                  end={2025}
+                  start={date.getFullYear()}
+                  tahun={tahun}
+                />
+              </CCol>
+              <CCol md={6} lg={4}>
+                <label className="form-label mb-2">Kode Anak Satker</label>
+                <SelectKodeAnakSatker setIdGaji={(id) => setIdGaji(id)} />
+              </CCol>
+              <CCol md={12} lg={2}>
+                <CButton type="submit" color="primary" className="w-100">
+                  <CIcon icon={cilSearch} className="me-2" />
+                  Cari
+                </CButton>
+              </CCol>
+            </CRow>
+          </CForm>
+          {table}
+        </CCardBody>
+      </CCard>
+
       <CToaster className="p-3" placement="top-end" push={toast} ref={toaster} />
     </>
   )

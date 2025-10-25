@@ -26,7 +26,7 @@ const SelectKodeAnakSatker = (props) => {
   const gajiOptions = [
     {
       value: '',
-      label: '-- Semua Unit Gaji --',
+      label: props.defaultLabel || '-- Semua Unit Gaji --',
       // disabled: true,
     },
   ]
@@ -56,6 +56,7 @@ SelectKodeAnakSatker.propTypes = {
   idGaji: PropTypes.string,
   setIdGaji: PropTypes.func,
   disabled: PropTypes.bool,
+  defaultLabel: PropTypes.string,
 }
 
 export default SelectKodeAnakSatker

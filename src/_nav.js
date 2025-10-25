@@ -90,6 +90,11 @@ const _nav = [
         name: 'Gaji',
         to: '/keuangan/gaji',
       },
+      {
+        component: CNavItem,
+        name: 'Potongan Unit',
+        to: '/keuangan/potongan-unit',
+      },
     ],
   },
   {
