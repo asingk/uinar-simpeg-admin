@@ -18,7 +18,7 @@ import {
   CToaster,
 } from '@coreui/react-pro'
 import CIcon from '@coreui/icons-react'
-import { cilCloudUpload, cilSearch, cilTrash } from '@coreui/icons'
+import { cilCloudUpload, cilFile, cilSearch, cilTrash } from '@coreui/icons'
 import SelectTahun from '../../components/kehadiran/SelectTahun'
 import axios from 'axios'
 import { KeycloakContext } from 'src/context'
@@ -27,6 +27,7 @@ import HapusPotonganGajiModal from 'src/components/keuangan/HapusPotonganGajiMod
 import SelectUnitGaji from 'src/components/SelectUnitGaji'
 import SelectUnitGajiRekapRemun from 'src/components/kehadiran/SelectUnitGajiRekapRemun'
 import SelectBulanTahunUpload from 'src/components/keuangan/SelectBulanTahunUpload'
+import { useNavigate } from 'react-router-dom'
 
 const PotonganUnit = () => {
   console.debug('rendering... PotonganUnit')
@@ -34,6 +35,7 @@ const PotonganUnit = () => {
   const date = new Date()
   const keycloak = useContext(KeycloakContext)
   const loginId = keycloak.idTokenParsed?.preferred_username
+  const navigate = useNavigate()
 
   // State untuk filter tabel
   const [tahun, setTahun] = useState(date.getFullYear())
@@ -93,10 +95,21 @@ const PotonganUnit = () => {
         lastModifiedDate: dayjs(data[i].lastModifiedDate).format('D/M/YYYY'),
         lastModifiedBy: data[i].lastModifiedBy,
         aksi: (
-          <CButton color="danger" size="sm" onClick={() => handleShowDeleteModal(data[i])}>
-            <CIcon icon={cilTrash} className="me-1" />
-            Hapus
-          </CButton>
+          <>
+            <CButton
+              color="info"
+              size="sm"
+              className="me-2"
+              onClick={() => navigate(`/keuangan/potongan-unit/${data[i].id}`)}
+            >
+              <CIcon icon={cilFile} className="me-1" />
+              Detail
+            </CButton>
+            <CButton color="danger" size="sm" onClick={() => handleShowDeleteModal(data[i])}>
+              <CIcon icon={cilTrash} className="me-1" />
+              Hapus
+            </CButton>
+          </>
         ),
         _cellProps: { id: { scope: 'row' } },
       }
@@ -165,18 +178,14 @@ const PotonganUnit = () => {
     setLoadingDelete(true)
 
     try {
-      const formData = new URLSearchParams()
-      formData.append('unitGajiId', selectedData.unitGajiId)
-      formData.append('tahun', selectedData.tahun)
-      formData.append('bulan', selectedData.bulan)
-
-      await axios.delete(`${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/potongan-gaji`, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Bearer ${keycloak.token}`,
+      await axios.delete(
+        `${import.meta.env.VITE_SIMPEG_REST_URL}/rekap/${selectedData.id}/potongan-gaji`,
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
         },
-        data: formData.toString(),
-      })
+      )
 
       addToast(deleteSuccessToast)
       handleCloseDeleteModal()
