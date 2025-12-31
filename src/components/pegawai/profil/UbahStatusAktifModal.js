@@ -14,6 +14,8 @@ import {
   CModalTitle,
   CSpinner,
 } from '@coreui/react-pro'
+import CIcon from '@coreui/icons-react'
+import { cilUserUnfollow, cilUserFollow, cilWarning, cilCheckCircle } from '@coreui/icons'
 
 const UPDATE_PEGAWAI_STATUS_AKTIF = gql`
   mutation UpdatePegawaiStatusAktif($id: ID!, $statusAktifId: Int!) {
@@ -91,20 +93,47 @@ const UbahStatusAktifModal = (props) => {
     for (const [key, value] of getData.daftarStatusAktif.entries()) {
       if (value.id > 1) {
         row.push(
-          <CFormCheck
-            type="radio"
-            name="flexRadioDefault"
-            id={'flexRadioDefault' + key}
-            checked={statusAktifId === value.id}
-            onChange={() => setStatusAktifId(value.id)}
-            label={value.nama}
-          />,
+          <div
+            key={key}
+            className="rounded p-3 mb-2"
+            style={{
+              backgroundColor:
+                statusAktifId === value.id
+                  ? 'var(--cui-primary-bg-subtle)'
+                  : 'var(--cui-secondary-bg)',
+              border:
+                statusAktifId === value.id
+                  ? '2px solid var(--cui-primary)'
+                  : '1px solid var(--cui-border-color)',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onClick={() => setStatusAktifId(value.id)}
+          >
+            <CFormCheck
+              type="radio"
+              name="flexRadioDefault"
+              id={'flexRadioDefault' + key}
+              checked={statusAktifId === value.id}
+              onChange={() => setStatusAktifId(value.id)}
+              label={
+                <span className={statusAktifId === value.id ? 'fw-semibold text-primary' : ''}>
+                  {value.nama}
+                </span>
+              }
+            />
+          </div>,
         )
       }
     }
   }
 
   const onSubmit = async () => {
+    if (props.pegawai.statusAktif.id === STATUS_AKTIF_AKTIF && !statusAktifId) {
+      setErrorMessage('Silakan pilih status nonaktif')
+      return
+    }
+
     try {
       await submit({
         variables: {
@@ -122,47 +151,118 @@ const UbahStatusAktifModal = (props) => {
     }
   }
 
-  if (props.pegawai.statusAktif.id > STATUS_AKTIF_AKTIF) {
-    row.push(<p>Anda yakin ingin mengaktifkan kembali {props.pegawai.nama}?</p>)
+  const isActivating = props.pegawai.statusAktif.id > STATUS_AKTIF_AKTIF
+
+  if (isActivating) {
+    row.push(
+      <div key="activate">
+        <div className="text-center mb-3">
+          <div
+            className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+            style={{
+              width: '64px',
+              height: '64px',
+              backgroundColor: 'var(--cui-success-bg-subtle)',
+            }}
+          >
+            <CIcon icon={cilUserFollow} size="xl" className="text-success" />
+          </div>
+        </div>
+        <p className="text-center mb-2 fs-5 fw-semibold">Aktifkan Kembali?</p>
+        <div className="rounded p-3 mb-3" style={{ backgroundColor: 'var(--cui-secondary-bg)' }}>
+          <p className="mb-1 fw-semibold">{props.pegawai.nama}</p>
+          <p className="mb-0 text-body-secondary small">NIP: {props.pegawai.id}</p>
+        </div>
+        <div className="rounded p-3" style={{ backgroundColor: 'var(--cui-success-bg-subtle)' }}>
+          <p className="text-success mb-0 small">
+            <CIcon icon={cilCheckCircle} className="me-2" />
+            Pegawai akan diaktifkan kembali dan dapat digunakan dalam sistem
+          </p>
+        </div>
+      </div>,
+    )
   }
 
   return (
-    <CModal visible={props.visible} onClose={() => props.setVisible(false)}>
-      <CModalHeader onClose={() => props.setVisible(false)}>
-        <CModalTitle>Nonaktifkan Pegawai</CModalTitle>
+    <CModal visible={props.visible} onClose={() => props.setVisible(false)} alignment="center">
+      <CModalHeader className="border-0 pb-0">
+        <CModalTitle>
+          <CIcon icon={isActivating ? cilUserFollow : cilUserUnfollow} className="me-2" />
+          {isActivating ? 'Aktifkan' : 'Nonaktifkan'} Pegawai
+        </CModalTitle>
       </CModalHeader>
-      <CModalBody>
-        <>
-          {!getLoading && !getError && (
-            <>
-              {row}
-              {error && (
-                <CAlert className="mt-3" color="danger">
-                  Error: {error.message}
-                </CAlert>
-              )}
-              {errorMessage && (
-                <CAlert className="mt-3" color="danger">
-                  Error: {errorMessage}
-                </CAlert>
-              )}
-            </>
-          )}
-          {getLoading && (
-            <div className="d-flex justify-content-center">
-              <CSpinner role="status">
-                <span className="visually-hidden">Loading...</span>
-              </CSpinner>
+      <CModalBody className="pt-3">
+        {!getLoading && !getError && (
+          <>
+            {!isActivating && (
+              <div className="mb-3">
+                <div className="text-center mb-3">
+                  <div
+                    className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style={{
+                      width: '64px',
+                      height: '64px',
+                      backgroundColor: 'var(--cui-warning-bg-subtle)',
+                    }}
+                  >
+                    <CIcon icon={cilUserUnfollow} size="xl" className="text-warning" />
+                  </div>
+                </div>
+                <p className="text-center mb-3 fw-semibold">Pilih Alasan Nonaktif</p>
+              </div>
+            )}
+            {row}
+            {error && (
+              <CAlert className="mt-3 d-flex align-items-start" color="danger">
+                <CIcon icon={cilWarning} className="me-2 mt-1" />
+                <div>
+                  <strong>Error!</strong>
+                  <p className="mb-0 small mt-1">{error.message}</p>
+                </div>
+              </CAlert>
+            )}
+            {errorMessage && (
+              <CAlert className="mt-3 d-flex align-items-start" color="danger">
+                <CIcon icon={cilWarning} className="me-2 mt-1" />
+                <div>
+                  <strong>Error!</strong>
+                  <p className="mb-0 small mt-1">{errorMessage}</p>
+                </div>
+              </CAlert>
+            )}
+          </>
+        )}
+        {getLoading && (
+          <div className="d-flex flex-column align-items-center justify-content-center py-5">
+            <CSpinner color="primary" className="mb-3" />
+            <p className="text-body-secondary">Memuat data...</p>
+          </div>
+        )}
+        {getError && (
+          <CAlert color="danger" className="d-flex align-items-center">
+            <CIcon icon={cilWarning} className="me-2" />
+            <div>
+              <strong>Error!</strong>
+              <p className="mb-0 small mt-1">{getError.message}</p>
             </div>
-          )}
-          {getError && <CAlert color="danger">Error: {getError.message}</CAlert>}
-        </>
+          </CAlert>
+        )}
       </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => props.setVisible(false)}>
+      <CModalFooter className="border-0">
+        <CButton
+          color="secondary"
+          variant="ghost"
+          onClick={() => props.setVisible(false)}
+          disabled={loading}
+        >
           Batal
         </CButton>
-        <CLoadingButton loading={loading} color="primary" onClick={() => onSubmit()}>
+        <CLoadingButton
+          loading={loading}
+          color={isActivating ? 'success' : 'warning'}
+          onClick={() => onSubmit()}
+        >
+          <CIcon icon={cilCheckCircle} className="me-2" />
           Simpan
         </CLoadingButton>
       </CModalFooter>

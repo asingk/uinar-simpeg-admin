@@ -95,6 +95,16 @@ const _nav = [
         name: 'Potongan Unit',
         to: '/keuangan/potongan-unit',
       },
+      {
+        component: CNavItem,
+        name: 'Remun',
+        to: '/keuangan/remun',
+      },
+      {
+        component: CNavItem,
+        name: 'Selisih Remun',
+        to: '/keuangan/selisih-remun',
+      },
     ],
   },
   {

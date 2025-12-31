@@ -18,6 +18,10 @@ const Pengumuman = React.lazy(() => import('./views/pengumuman/Pengumuman'))
 const Gaji = React.lazy(() => import('./views/keuangan/Gaji'))
 const PotonganUnit = React.lazy(() => import('./views/keuangan/PotonganUnit'))
 const PotonganUnitDetail = React.lazy(() => import('./views/keuangan/PotonganUnitDetail'))
+const Remun = React.lazy(() => import('./views/keuangan/Remun'))
+const RemunDetail = React.lazy(() => import('./views/keuangan/RemunDetail'))
+const SelisihRemun = React.lazy(() => import('./views/keuangan/SelisihRemun'))
+const SelisihRemunDetail = React.lazy(() => import('./views/keuangan/SelisihRemunDetail'))
 
 const routes = [
   { path: '/', exact: true, name: <Translation>{(t) => t('home')}</Translation> },
@@ -76,10 +80,22 @@ const routes = [
   },
   { path: '/keuangan/gaji', name: 'Gaji', element: Gaji },
   { path: '/keuangan/potongan-unit', name: 'Potongan Unit Gaji', element: PotonganUnit },
+  { path: '/keuangan/remun', name: 'Remun', element: Remun },
+  { path: '/keuangan/selisih-remun', name: 'SelisihRemun', element: SelisihRemun },
   {
     path: '/keuangan/potongan-unit/:id',
     name: 'Detail Potongan Unit',
     element: PotonganUnitDetail,
+  },
+  {
+    path: '/keuangan/remun/:id',
+    name: 'Detail Remun',
+    element: RemunDetail,
+  },
+  {
+    path: '/rekap/:id/selisih-remun-pegawai',
+    name: 'Detail Selisih Remun',
+    element: SelisihRemunDetail,
   },
 ]
 

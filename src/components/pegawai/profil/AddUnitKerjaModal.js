@@ -13,6 +13,8 @@ import {
   CModalHeader,
   CModalTitle,
 } from '@coreui/react-pro'
+import CIcon from '@coreui/icons-react'
+import { cilPlus, cilWarning, cilBuilding, cilCheckCircle } from '@coreui/icons'
 
 const CREATE_UNIT_KERJA_PEGAWAI = gql`
   mutation CreateUnitKerjaPegawai(
@@ -50,6 +52,12 @@ const AddUnitKerjaModal = (props) => {
   }, [data, props])
 
   const submitJabatan = async () => {
+    if (!strOrgId) {
+      setErrorMessage('Silakan pilih unit kerja terlebih dahulu')
+      return
+    }
+
+    setErrorMessage('')
     try {
       await simpan({
         variables: {
@@ -66,35 +74,78 @@ const AddUnitKerjaModal = (props) => {
   }
 
   return (
-    <CModal visible={props.visible} onClose={() => props.setVisible(false)} size={'lg'}>
-      <CModalHeader onClose={() => props.setVisible(false)}>
-        <CModalTitle>Tambah Jabatan Aktif</CModalTitle>
+    <CModal
+      visible={props.visible}
+      onClose={() => props.setVisible(false)}
+      size="lg"
+      alignment="center"
+    >
+      <CModalHeader className="border-0 pb-0">
+        <CModalTitle>
+          <CIcon icon={cilBuilding} className="me-2" />
+          Tambah Unit Kerja Aktif
+        </CModalTitle>
       </CModalHeader>
-      <CModalBody>
+      <CModalBody className="pt-3">
+        <div
+          className="rounded p-3 mb-3"
+          style={{ backgroundColor: 'var(--cui-primary-bg-subtle)' }}
+        >
+          <p className="text-primary mb-0 small">
+            <CIcon icon={cilBuilding} className="me-2" />
+            Pilih unit kerja yang akan ditambahkan untuk pegawai ini
+          </p>
+        </div>
+
         <SelectUnitKerja setStrOrgId={(id) => setStrOrgId(id)} />
-        <CFormCheck
-          id="flexCheckChecked"
-          label="Unit kerja utama"
-          className="mt-2"
-          checked={!isSecondary}
-          onChange={(e) => setIsSecondary(!e.target.checked)}
-        />
+
+        <div className="rounded p-3 mt-3" style={{ backgroundColor: 'var(--cui-secondary-bg)' }}>
+          <CFormCheck
+            id="flexCheckChecked"
+            label={
+              <span className="d-flex align-items-center">
+                <CIcon icon={cilCheckCircle} className="me-2 text-success" />
+                <span className="fw-semibold">Unit kerja utama</span>
+              </span>
+            }
+            checked={!isSecondary}
+            onChange={(e) => setIsSecondary(!e.target.checked)}
+          />
+          <p className="text-body-secondary small mb-0 ms-4 ps-2 mt-1">
+            Centang jika ini adalah unit kerja utama pegawai
+          </p>
+        </div>
+
         {error && (
-          <CAlert className="mt-3" color="danger">
-            Error: {error.message}
+          <CAlert className="mt-3 d-flex align-items-start" color="danger">
+            <CIcon icon={cilWarning} className="me-2 mt-1" />
+            <div>
+              <strong>Error!</strong>
+              <p className="mb-0 small mt-1">{error.message}</p>
+            </div>
           </CAlert>
         )}
         {errorMessage && (
-          <CAlert className="mt-3" color="danger">
-            Error: {errorMessage}
+          <CAlert className="mt-3 d-flex align-items-start" color="danger">
+            <CIcon icon={cilWarning} className="me-2 mt-1" />
+            <div>
+              <strong>Error!</strong>
+              <p className="mb-0 small mt-1">{errorMessage}</p>
+            </div>
           </CAlert>
         )}
       </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" onClick={() => props.setVisible(false)}>
-          Close
+      <CModalFooter className="border-0">
+        <CButton
+          color="secondary"
+          variant="ghost"
+          onClick={() => props.setVisible(false)}
+          disabled={loading}
+        >
+          Batal
         </CButton>
         <CLoadingButton loading={loading} color="primary" onClick={submitJabatan}>
+          <CIcon icon={cilPlus} className="me-2" />
           Simpan
         </CLoadingButton>
       </CModalFooter>
