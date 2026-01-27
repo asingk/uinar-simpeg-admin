@@ -98,7 +98,7 @@ const RiwayatHadir = () => {
           },
         },
       )
-      setRiwayat(respRiwayatHadir.data.riwayatKehadiran.reverse())
+      setRiwayat(respRiwayatHadir.data.riwayatKehadiran)
     } catch (err) {
       // handle error
       // console.log(error.message)
@@ -192,15 +192,14 @@ const RiwayatHadir = () => {
     if (riwayat.length > 0) {
       rows = riwayat.map((item) => (
         <CTableRow key={item.tanggal}>
-          <CTableHeaderCell scope="row">{dayjs(item.tanggal).format('D/M/YYYY')}</CTableHeaderCell>
+          <CTableHeaderCell scope="row">
+            {dayjs(item.tanggal).format('DD-MM-YYYY')}
+          </CTableHeaderCell>
+          <CTableDataCell>{item.hari}</CTableDataCell>
+          <CTableDataCell>{item.jadwalDatang || '-'}</CTableDataCell>
+          <CTableDataCell>{item.absenDatang || '-'}</CTableDataCell>
           <CTableDataCell>
-            {item.keteranganDatang || (item.jamDatang ? item.jamDatang.substr(0, 5) : '-')}
-          </CTableDataCell>
-          {profilRiwayat?.jenisJabatan !== 'DS' && (
-            <CTableDataCell>{item.telatDatang}</CTableDataCell>
-          )}
-          <CTableDataCell>
-            {!item.jamDatang && !item.keteranganDatang && (
+            {!item.absenDatang && !item.keteranganDatang && (
               <CButton
                 color="info"
                 variant="outline"
@@ -223,14 +222,10 @@ const RiwayatHadir = () => {
               </CButton>
             )}
           </CTableDataCell>
+          <CTableDataCell>{item.jadwalPulang || '-'}</CTableDataCell>
+          <CTableDataCell>{item.absenPulang || '-'}</CTableDataCell>
           <CTableDataCell>
-            {item.keteranganPulang || (item.jamPulang ? item.jamPulang.substr(0, 5) : '-')}
-          </CTableDataCell>
-          {profilRiwayat?.jenisJabatan !== 'DS' && (
-            <CTableDataCell>{item.cepatPulang}</CTableDataCell>
-          )}
-          <CTableDataCell>
-            {!item.jamPulang && !item.keteranganPulang && (
+            {!item.absenPulang && !item.keteranganPulang && (
               <CButton
                 color="info"
                 variant="outline"
@@ -253,9 +248,10 @@ const RiwayatHadir = () => {
               </CButton>
             )}
           </CTableDataCell>
+          <CTableDataCell>{item.keterangan}</CTableDataCell>
           <CTableDataCell>
-            {((item.jamDatang && !item.keteranganDatang) ||
-              (item.jamPulang && !item.keteranganPulang)) && (
+            {((item.absenDatang && !item.keteranganDatang) ||
+              (item.absenPulang && !item.keteranganPulang)) && (
               <CButton
                 color="danger"
                 variant="outline"
@@ -283,7 +279,7 @@ const RiwayatHadir = () => {
     } else {
       rows = (
         <tr>
-          <td colSpan="8">Tidak ada Data</td>
+          <td colSpan="10">Tidak ada Data</td>
         </tr>
       )
     }
@@ -292,16 +288,14 @@ const RiwayatHadir = () => {
         <CTableHead>
           <CTableRow>
             <CTableHeaderCell scope="col">Tanggal</CTableHeaderCell>
-            <CTableHeaderCell scope="col">Datang</CTableHeaderCell>
-            {profilRiwayat?.jenisJabatan !== 'DS' && (
-              <CTableHeaderCell scope="col">Telat Datang</CTableHeaderCell>
-            )}
+            <CTableHeaderCell scope="col">Hari</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Jadwal Datang</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Absen Datang</CTableHeaderCell>
             <CTableHeaderCell scope="col"></CTableHeaderCell>
-            <CTableHeaderCell scope="col">Pulang</CTableHeaderCell>
-            {profilRiwayat?.jenisJabatan !== 'DS' && (
-              <CTableHeaderCell scope="col">Cepat Pulang</CTableHeaderCell>
-            )}
+            <CTableHeaderCell scope="col">Jadwal Pulang</CTableHeaderCell>
+            <CTableHeaderCell scope="col">Absen Pulang</CTableHeaderCell>
             <CTableHeaderCell scope="col"></CTableHeaderCell>
+            <CTableHeaderCell scope="col">Keterangan</CTableHeaderCell>
             <CTableHeaderCell scope="col"></CTableHeaderCell>
           </CTableRow>
         </CTableHead>
