@@ -59,7 +59,7 @@ const EditStrukturJabatanModal = (props) => {
   return (
     <CModal visible={props.visible} onClose={() => props.setVisible(false)}>
       <CModalHeader onClose={() => props.setVisible(false)}>
-        <CModalTitle>Tambah Sublevel Jabatan</CModalTitle>
+        <CModalTitle>Edit Struktur Jabatan</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <>

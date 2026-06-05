@@ -7,6 +7,7 @@ const GET_DAFTAR_GRADE = gql`
   query DaftarGradeRemun {
     daftarGradeRemun {
       id
+      grade
     }
   }
 `
@@ -24,7 +25,7 @@ const SelectGrade = (props) => {
   let options = [{ label: '-- Pilih Grade --', value: '' }]
   data.daftarGradeRemun.forEach((row) => {
     let opt = {
-      label: row.id,
+      label: row.grade,
       value: row.id,
     }
     options.push(opt)

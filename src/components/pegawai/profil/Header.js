@@ -31,6 +31,17 @@ const Header = ({ pegawai }) => {
 
   const keycloak = useContext(KeycloakContext)
   const role = keycloak.resourceAccess['simpeg-admin']?.roles[0]
+  const currencyFormatter = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  })
+
+  const getRemun = (grade) => {
+    const p1 = Number(grade?.p1 || 0)
+    const p2 = Number(grade?.p2 || 0)
+    return p1 + p2
+  }
 
   let remunPosisi
   let ukerRow = []
@@ -62,9 +73,12 @@ const Header = ({ pegawai }) => {
               {uker}
             </div>
             {remunPosisi && (
-              <CBadge color="info" className="mt-2">
-                Grade {remunPosisi.id}
-              </CBadge>
+              <div className="d-flex justify-content-center gap-2 flex-wrap mt-2">
+                <CBadge color="info">Grade {remunPosisi.grade}</CBadge>
+                <CBadge color="success">
+                  Remun {currencyFormatter.format(getRemun(remunPosisi))}
+                </CBadge>
+              </div>
             )}
           </div>
           <CButton
@@ -186,9 +200,15 @@ const Header = ({ pegawai }) => {
                           {pegawai.jabatanSaatIni.grade &&
                             !remunPosisi &&
                             pegawai.statusPegawai.id !== 3 && (
-                              <CBadge color="info" className="mt-2">
-                                Grade {pegawai.jabatanSaatIni.grade.id}
-                              </CBadge>
+                              <div className="d-flex justify-content-center gap-2 flex-wrap mt-2">
+                                <CBadge color="info">
+                                  Grade {pegawai.jabatanSaatIni.grade.grade}
+                                </CBadge>
+                                <CBadge color="success">
+                                  Remun{' '}
+                                  {currencyFormatter.format(getRemun(pegawai.jabatanSaatIni.grade))}
+                                </CBadge>
+                              </div>
                             )}
                         </div>
                         <CButton
@@ -318,6 +338,9 @@ Header.fragments = {
         }
         grade {
           id
+          grade
+          p1
+          p2
         }
       }
       unitKerjaSaatIni {
@@ -340,6 +363,9 @@ Header.fragments = {
         }
         grade {
           id
+          grade
+          p1
+          p2
         }
         isSecondary
       }

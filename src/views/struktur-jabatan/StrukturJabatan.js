@@ -25,7 +25,7 @@ const GET_JABATAN_PEGAWAI = gql`
       }
       grade {
         id
-        remun
+        grade
       }
     }
   }
@@ -106,7 +106,7 @@ const StrukturJabatan = () => {
         jabatan: row.level.jabatan.nama,
         level: row.level.nama,
         sublevel: row.sublevel?.nama || '',
-        grade: row.grade?.id || '',
+        grade: row.grade?.grade || '',
       }
       items.push(item)
     })
