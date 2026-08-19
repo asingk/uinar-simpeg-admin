@@ -38,7 +38,7 @@ const RiwayatHadir = () => {
   const [idPegawai, setIdPegawai] = useState()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [profilRiwayat, setProfilRiwayat] = useState()
+  // const [profilRiwayat, setProfilRiwayat] = useState()
   const [riwayat, setRiwayat] = useState([])
   const [isOpenTambahModal, setIsOpenTambahModal] = useState(false)
   const [tanggal, setTanggal] = useState()
@@ -64,29 +64,29 @@ const RiwayatHadir = () => {
     onSearch()
   }
 
-  const searchProfilRiwayat = async () => {
-    try {
-      const respRiwayatProfil = await axios.get(
-        `${import.meta.env.VITE_SIMPEG_REST_URL}/pegawai/${idPegawai}/riwayat-profil?bulan=${bulan}&tahun=${tahun}`,
-        {
-          headers: {
-            Authorization: `Bearer ${keycloak.token}`,
-          },
-        },
-      )
-      setProfilRiwayat(respRiwayatProfil.data.riwayatProfil[0])
-    } catch (err) {
-      // handle error
-      // console.log(error.message)
-      if (error.response) {
-        // The client was given an error response (5xx, 4xx)
-        // setErrorResp(true)
-        // setErrorProfilRiwayat(error.response.data.message)
-      } else {
-        // setErrorProfilRiwayat('Ooops... terjadi kesalahan!')
-      }
-    }
-  }
+  // const searchProfilRiwayat = async () => {
+  //   try {
+  //     const respRiwayatProfil = await axios.get(
+  //       `${import.meta.env.VITE_SIMPEG_REST_URL}/pegawai/${idPegawai}/riwayat-profil?bulan=${bulan}&tahun=${tahun}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${keycloak.token}`,
+  //         },
+  //       },
+  //     )
+  //     setProfilRiwayat(respRiwayatProfil.data.riwayatProfil[0])
+  //   } catch (err) {
+  //     // handle error
+  //     // console.log(error.message)
+  //     if (error.response) {
+  //       // The client was given an error response (5xx, 4xx)
+  //       // setErrorResp(true)
+  //       // setErrorProfilRiwayat(error.response.data.message)
+  //     } else {
+  //       // setErrorProfilRiwayat('Ooops... terjadi kesalahan!')
+  //     }
+  //   }
+  // }
 
   const searchRiwayatHadir = async () => {
     try {
@@ -116,7 +116,7 @@ const RiwayatHadir = () => {
     if (!idPegawai) return
     setLoading(true)
     setError('')
-    await searchProfilRiwayat()
+    // await searchProfilRiwayat()
     await searchRiwayatHadir()
     setLoading(false)
   }
@@ -197,7 +197,9 @@ const RiwayatHadir = () => {
           </CTableHeaderCell>
           <CTableDataCell>{item.hari}</CTableDataCell>
           <CTableDataCell>{item.jadwalDatang || '-'}</CTableDataCell>
-          <CTableDataCell>{item.absenDatang || '-'}</CTableDataCell>
+          <CTableDataCell>
+            {item.keteranganDatang || (item.absenDatang ? item.absenDatang.substr(0, 5) : '-')}
+          </CTableDataCell>
           <CTableDataCell>
             {!item.absenDatang && !item.keteranganDatang && (
               <CButton
@@ -223,7 +225,9 @@ const RiwayatHadir = () => {
             )}
           </CTableDataCell>
           <CTableDataCell>{item.jadwalPulang || '-'}</CTableDataCell>
-          <CTableDataCell>{item.absenPulang || '-'}</CTableDataCell>
+          <CTableDataCell>
+            {item.keteranganPulang || (item.absenPulang ? item.absenPulang.substr(0, 5) : '-')}
+          </CTableDataCell>
           <CTableDataCell>
             {!item.absenPulang && !item.keteranganPulang && (
               <CButton
@@ -250,8 +254,7 @@ const RiwayatHadir = () => {
           </CTableDataCell>
           <CTableDataCell>{item.keterangan}</CTableDataCell>
           <CTableDataCell>
-            {((item.absenDatang && !item.keteranganDatang) ||
-              (item.absenPulang && !item.keteranganPulang)) && (
+            {((item.absenDatang && !item.keterangan) || (item.absenPulang && !item.keterangan)) && (
               <CButton
                 color="danger"
                 variant="outline"
@@ -262,7 +265,7 @@ const RiwayatHadir = () => {
                 <CIcon icon={cilDelete} size="sm" />
               </CButton>
             )}
-            {(item.keteranganDatang === 'dihapus' || item.keteranganPulang === 'dihapus') && (
+            {item.keterangan === 'dihapus' && (
               <CButton
                 color="warning"
                 variant="outline"
