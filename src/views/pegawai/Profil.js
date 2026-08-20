@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { gql, useQuery } from '@apollo/client'
+import axios from 'axios'
 import Header from 'src/components/pegawai/profil/Header'
 import Pribadi from 'src/components/pegawai/profil/Pribadi'
 import Alamat from 'src/components/pegawai/profil/Alamat'
@@ -37,6 +38,7 @@ import {
   cilStar,
   cilBriefcase,
   cilEducation,
+  cilCloudDownload,
 } from '@coreui/icons'
 import UpdatePegawaiStatusPegawaiModal from '../../components/pegawai/profil/UpdatePegawaiStatusPegawaiModal'
 import DeletePegawaiModal from '../../components/pegawai/profil/DeletePegawaiModal'
@@ -90,6 +92,7 @@ const ProfilPegawai = () => {
   const [openP, setOpenP] = useState(false)
   const [openC, setOpenC] = useState(false)
   const [openD, setOpenD] = useState(false)
+  const [downloadLoading, setDownloadLoading] = useState(false)
 
   const keycloak = useContext(KeycloakContext)
   const role = keycloak.resourceAccess['simpeg-admin']?.roles[0]
@@ -98,6 +101,42 @@ const ProfilPegawai = () => {
     variables: { id: id },
     fetchPolicy: 'no-cache',
   })
+
+  const handleDownloadDRH = async () => {
+    try {
+      setDownloadLoading(true)
+      const response = await axios.get(
+        `${import.meta.env.VITE_GRAPH_SIMPEG_URL}/api/pegawai/${data.pegawai.id}/drh`,
+        {
+          headers: {
+            Authorization: `Bearer ${keycloak.token}`,
+          },
+          responseType: 'blob',
+        },
+      )
+      const blob = new Blob([response.data], { type: 'application/pdf' })
+      const downloadUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      const contentDisposition = response.headers['content-disposition']
+      let fileName = `DRH_${data.pegawai.id}.pdf`
+      if (contentDisposition) {
+        const fileNameMatch = contentDisposition.match(/filename="?([^";]+)"?/)
+        if (fileNameMatch && fileNameMatch[1]) {
+          fileName = fileNameMatch[1]
+        }
+      }
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode.removeChild(link)
+      window.URL.revokeObjectURL(downloadUrl)
+    } catch (err) {
+      console.error('Gagal mengunduh DRH:', err)
+    } finally {
+      setDownloadLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -223,6 +262,22 @@ const ProfilPegawai = () => {
                   Aksi Pegawai
                 </h6>
                 <div className="d-flex flex-wrap gap-2 justify-content-center">
+                  {/* Download DRH Button */}
+                  <CButton
+                    color="primary"
+                    variant="outline"
+                    onClick={handleDownloadDRH}
+                    disabled={downloadLoading}
+                    className="rounded-pill"
+                  >
+                    {downloadLoading ? (
+                      <CSpinner size="sm" className="me-2" />
+                    ) : (
+                      <CIcon icon={cilCloudDownload} className="me-2" />
+                    )}
+                    Download DRH
+                  </CButton>
+
                   {/* Status Aktif Button */}
                   <CButton
                     color={data.pegawai.statusAktif.id === 1 ? 'warning' : 'success'}
